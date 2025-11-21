@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
@@ -11,15 +11,28 @@ export class UnitsService {
 
   constructor(private readonly http: HttpClient) {}
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return token
+      ? new HttpHeaders({ Authorization: `Bearer ${token}` })
+      : new HttpHeaders();
+  }
+
   getUnits(): Observable<Unit[]> {
-    return this.http.get<Unit[]>(this.baseUrl);
+    return this.http.get<Unit[]>(this.baseUrl, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   createUnit(payload: Partial<Unit>): Observable<Unit> {
-    return this.http.post<Unit>(this.baseUrl, payload);
+    return this.http.post<Unit>(this.baseUrl, payload, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   updateUnit(id: number, payload: Partial<Unit>): Observable<Unit> {
-    return this.http.put<Unit>(`${this.baseUrl}/${id}`, payload);
+    return this.http.put<Unit>(`${this.baseUrl}/${id}`, payload, {
+      headers: this.getAuthHeaders()
+    });
   }
 }
