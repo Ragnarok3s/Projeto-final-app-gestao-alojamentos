@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -13,9 +13,7 @@ import { unitsReducer } from './features/units/state/units.reducer';
 import { UnitsEffects } from './features/units/state/units.effects';
 import { reservationsReducer } from './features/reservations/state/reservations.reducer';
 import { ReservationsEffects } from './features/reservations/state/reservations.effects';
-import { authReducer } from './features/auth/state/auth.reducer';
-import { AuthEffects } from './features/auth/state/auth.effects';
-import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
 
 @NgModule({
   declarations: [AppComponent, AppLayoutComponent],
