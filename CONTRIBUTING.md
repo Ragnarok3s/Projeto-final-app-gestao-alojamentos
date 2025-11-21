@@ -1,4 +1,4 @@
-# Contribuir para <NOME_DO_PROJETO>
+# Contribuir para Gestor de Alojamentos
 
 Guia para preparar ambiente, seguir convenções e submeter contribuições com qualidade.
 

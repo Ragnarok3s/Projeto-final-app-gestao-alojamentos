@@ -1,6 +1,6 @@
 # Variáveis de Ambiente
 
-Este documento descreve as variáveis de ambiente necessárias para executar o backend e o frontend do projeto <NOME_DO_PROJETO> em ambientes de desenvolvimento e produção internos.
+Este documento descreve as variáveis de ambiente necessárias para executar o backend e o frontend do projeto Gestor de Alojamentos em ambientes de desenvolvimento e produção internos.
 
 ## Backend
 

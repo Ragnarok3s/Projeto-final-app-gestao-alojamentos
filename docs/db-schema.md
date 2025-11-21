@@ -1,4 +1,4 @@
-# <NOME_DO_PROJETO> — Esquema de Base de Dados
+# Gestor de Alojamentos — Esquema de Base de Dados
 
 Descrição do modelo relacional em PostgreSQL para suportar autenticação, gestão de unidades e reservas internas.
 

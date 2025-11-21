@@ -1,4 +1,4 @@
-# <NOME_DO_PROJETO> — Frontend
+# Gestor de Alojamentos — Frontend
 
 SPA interna em Angular para operadores gerirem unidades de alojamento e reservas no browser, com estado global em NgRx e calendarização via FullCalendar.
 

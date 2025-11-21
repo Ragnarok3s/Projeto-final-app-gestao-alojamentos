@@ -1,4 +1,4 @@
-# <NOME_DO_PROJETO> — API do Backend
+# Gestor de Alojamentos — API do Backend
 
 Documentação resumida da API REST usada pelo frontend Angular para autenticação, gestão de unidades e gestão de reservas internas.
 

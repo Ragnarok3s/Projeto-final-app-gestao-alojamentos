@@ -1,4 +1,4 @@
-# <NOME_DO_PROJETO>
+# Gestor de Alojamentos
 
 Aplicação web interna para gerir alojamentos e reservas de uma empresa de gestão de propriedades, com frontend Angular e backend Node.js/Express.
 

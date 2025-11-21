@@ -1,7 +1,7 @@
-# <NOME_DO_PROJETO> — Arquitetura
+# Gestor de Alojamentos — Arquitetura
 
 ## Introdução
-A aplicação <NOME_DO_PROJETO> é uma plataforma web interna para equipas de gestão de alojamentos, permitindo gerir unidades e reservas internas de forma centralizada, com visualização em calendário e controlo de acessos.
+A aplicação Gestor de Alojamentos é uma plataforma web interna para equipas de gestão de alojamentos, permitindo gerir unidades e reservas internas de forma centralizada, com visualização em calendário e controlo de acessos.
 
 ## Diagrama lógico (texto)
 - **Frontend (SPA Angular)**: aplica design responsivo, consome API REST, mantém estado global com NgRx e comunica via HTTP/JSON.
