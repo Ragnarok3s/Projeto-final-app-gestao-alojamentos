@@ -17,9 +17,13 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.use('/auth', authRouter);
-app.use('/units', unitsRouter);
-app.use(reservationsRouter);
+const apiRouter = express.Router();
+
+apiRouter.use('/auth', authRouter);
+apiRouter.use('/units', unitsRouter);
+apiRouter.use(reservationsRouter);
+
+app.use('/api', apiRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Rota não encontrada' });

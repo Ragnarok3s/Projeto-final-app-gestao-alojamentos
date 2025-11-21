@@ -4,6 +4,7 @@ import { HttpError } from '../utils/httpError';
 interface UnitInput {
   name?: string;
   isActive?: boolean;
+  capacity?: number;
 }
 
 export async function listUnits() {
@@ -17,9 +18,18 @@ export async function createUnit(data: UnitInput) {
     throw new HttpError(400, 'Nome da unidade é obrigatório');
   }
 
+  if (data.capacity === undefined || Number.isNaN(Number(data.capacity))) {
+    throw new HttpError(400, 'Capacidade da unidade é obrigatória');
+  }
+
+  if (data.capacity <= 0) {
+    throw new HttpError(400, 'Capacidade da unidade deve ser maior que zero');
+  }
+
   return prisma.unit.create({
     data: {
       name: data.name.trim(),
+      capacity: Math.trunc(data.capacity),
       isActive: data.isActive ?? true,
     },
   });
@@ -28,6 +38,16 @@ export async function createUnit(data: UnitInput) {
 export async function updateUnit(id: number, data: UnitInput) {
   if (data.name !== undefined && data.name.trim().length === 0) {
     throw new HttpError(400, 'Nome da unidade é obrigatório');
+  }
+
+  if (data.capacity !== undefined) {
+    if (Number.isNaN(Number(data.capacity))) {
+      throw new HttpError(400, 'Capacidade da unidade deve ser um número');
+    }
+
+    if (data.capacity <= 0) {
+      throw new HttpError(400, 'Capacidade da unidade deve ser maior que zero');
+    }
   }
 
   const existing = await prisma.unit.findUnique({ where: { id } });
@@ -39,6 +59,7 @@ export async function updateUnit(id: number, data: UnitInput) {
     where: { id },
     data: {
       name: data.name?.trim() ?? existing.name,
+      capacity: data.capacity ?? existing.capacity,
       isActive: data.isActive ?? existing.isActive,
     },
   });
