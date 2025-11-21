@@ -65,8 +65,8 @@ export async function listReservations(unitId: number, from?: string, to?: strin
   return prisma.reservation.findMany({
     where: {
       unitId,
-      startDate: { gte: start },
-      endDate: { lte: end },
+      startDate: { lt: end },
+      endDate: { gt: start },
     },
     orderBy: { startDate: 'asc' },
   });
