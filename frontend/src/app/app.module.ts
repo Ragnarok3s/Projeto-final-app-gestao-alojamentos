@@ -11,6 +11,8 @@ import { AppComponent } from './app.component';
 import { AppLayoutComponent } from './layout/app-layout.component';
 import { unitsReducer } from './features/units/state/units.reducer';
 import { UnitsEffects } from './features/units/state/units.effects';
+import { reservationsReducer } from './features/reservations/state/reservations.reducer';
+import { ReservationsEffects } from './features/reservations/state/reservations.effects';
 
 @NgModule({
   declarations: [AppComponent, AppLayoutComponent],
@@ -19,8 +21,8 @@ import { UnitsEffects } from './features/units/state/units.effects';
     BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule,
-    StoreModule.forRoot({ units: unitsReducer }),
-    EffectsModule.forRoot([UnitsEffects]),
+    StoreModule.forRoot({ units: unitsReducer, reservations: reservationsReducer }),
+    EffectsModule.forRoot([UnitsEffects, ReservationsEffects]),
     StoreDevtoolsModule.instrument({ maxAge: 25 })
   ],
   providers: [],

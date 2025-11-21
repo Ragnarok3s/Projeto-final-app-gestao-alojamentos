@@ -1,0 +1,42 @@
+.calendar-page {
+  background: #fff;
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.status {
+  margin-bottom: 8px;
+}
+
+.status.error {
+  color: #c62828;
+}
+
+.calendar {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.reservation-event.reservation-confirmed {
+  background: #4caf50 !important;
+  border-color: #388e3c !important;
+  color: #fff !important;
+}
+
+.reservation-event.reservation-cancelled {
+  background: #e0e0e0 !important;
+  border-color: #bdbdbd !important;
+  color: #424242 !important;
+  text-decoration: line-through;
+}

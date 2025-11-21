@@ -1,0 +1,50 @@
+<div class="dialog-backdrop">
+  <div class="dialog">
+    <div class="dialog-header">
+      <h3>Reserva</h3>
+      <button class="btn btn-secondary" type="button" (click)="close.emit()">Fechar</button>
+    </div>
+
+    <div *ngIf="reservation as res" class="dialog-body">
+      <p><strong>Estado:</strong> {{ res.status === 'CONFIRMED' ? 'Ativa' : 'Cancelada' }}</p>
+      <p><strong>Hóspede:</strong> {{ res.guestName }}</p>
+      <p><strong>Contacto:</strong> {{ res.guestContact || 'N/A' }}</p>
+      <p><strong>Notas:</strong> {{ res.notes || '-' }}</p>
+      <p><strong>Datas:</strong> {{ res.startDate | date: 'shortDate' }} - {{ res.endDate | date: 'shortDate' }}</p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="res.status === 'CONFIRMED'">
+        <div class="form-row">
+          <label for="guestName">Nome</label>
+          <input id="guestName" type="text" formControlName="guestName" />
+        </div>
+
+        <div class="form-row">
+          <label for="guestContact">Contacto</label>
+          <input id="guestContact" type="text" formControlName="guestContact" />
+        </div>
+
+        <div class="form-row">
+          <label for="notes">Notas</label>
+          <textarea id="notes" rows="3" formControlName="notes"></textarea>
+        </div>
+
+        <div class="form-row">
+          <label for="startDate">Início</label>
+          <input id="startDate" type="date" formControlName="startDate" />
+        </div>
+
+        <div class="form-row">
+          <label for="endDate">Fim</label>
+          <input id="endDate" type="date" formControlName="endDate" />
+        </div>
+
+        <div class="dialog-actions">
+          <button class="btn btn-primary" type="submit" [disabled]="form.invalid">Guardar alterações</button>
+          <button class="btn btn-secondary" type="button" (click)="cancel()">Cancelar reserva</button>
+        </div>
+      </form>
+
+      <div *ngIf="res.status === 'CANCELLED'" class="dialog-notice">Reserva cancelada. Não é possível editar.</div>
+    </div>
+  </div>
+</div>
