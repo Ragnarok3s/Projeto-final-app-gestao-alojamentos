@@ -31,13 +31,13 @@ export const initialState: UnitsState = unitsAdapter.getInitialState({
 export const unitsReducer = createReducer(
   initialState,
   on(loadUnits, (state) => ({ ...state, loading: true, error: null })),
-  on(loadUnitsSuccess, (state, { units }) => unitsAdapter.setAll(units, { ...state, loading: false })),
+  on(loadUnitsSuccess, (state, { units }) => unitsAdapter.setAll(units, { ...state, loading: false, error: null })),
   on(loadUnitsFailure, (state, { error }) => ({ ...state, loading: false, error })),
   on(createUnit, (state) => ({ ...state, loading: true, error: null })),
-  on(createUnitSuccess, (state, { unit }) => unitsAdapter.addOne(unit, { ...state, loading: false })),
+  on(createUnitSuccess, (state, { unit }) => unitsAdapter.addOne(unit, { ...state, loading: false, error: null })),
   on(createUnitFailure, (state, { error }) => ({ ...state, loading: false, error })),
   on(updateUnit, (state) => ({ ...state, loading: true, error: null })),
-  on(updateUnitSuccess, (state, { unit }) => unitsAdapter.upsertOne(unit, { ...state, loading: false })),
+  on(updateUnitSuccess, (state, { unit }) => unitsAdapter.upsertOne(unit, { ...state, loading: false, error: null })),
   on(updateUnitFailure, (state, { error }) => ({ ...state, loading: false, error }))
 );
 

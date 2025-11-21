@@ -7,6 +7,9 @@
       <div class="form-row">
         <label for="name">Nome</label>
         <input id="name" type="text" formControlName="name" required />
+        <div class="error" *ngIf="nameControl?.invalid && (nameControl?.dirty || nameControl?.touched)">
+          Campo obrigatório.
+        </div>
       </div>
       <div class="form-row">
         <label>
@@ -14,14 +17,16 @@
         </label>
       </div>
       <div class="form-actions">
-        <button class="btn btn-primary" type="submit">{{ editingUnitId ? 'Guardar alterações' : 'Criar unidade' }}</button>
+        <button class="btn btn-primary" type="submit" [disabled]="form.invalid || (loading$ | async)">
+          {{ editingUnitId ? 'Guardar alterações' : 'Criar unidade' }}
+        </button>
         <button class="btn btn-secondary" type="button" (click)="resetForm()">Limpar</button>
       </div>
     </form>
   </div>
 
   <div class="status" *ngIf="loading$ | async">A carregar...</div>
-  <div class="status error" *ngIf="error$ | async as error">Erro: {{ error }}</div>
+  <div class="status error" *ngIf="error$ | async as error">{{ error }}</div>
 
   <table class="table">
     <thead>

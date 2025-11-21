@@ -2,10 +2,14 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AppLayoutComponent } from './layout/app-layout.component';
-import { AuthGuard } from './layout/auth.guard';
+import { AuthGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'app/units' },
+  { path: '', pathMatch: 'full', redirectTo: 'login' },
+  {
+    path: 'login',
+    loadChildren: () => import('./features/auth/auth.module').then((m) => m.AuthModule)
+  },
   {
     path: 'app',
     component: AppLayoutComponent,
@@ -17,7 +21,7 @@ const routes: Routes = [
       }
     ]
   },
-  { path: '**', redirectTo: 'app/units' }
+  { path: '**', redirectTo: 'login' }
 ];
 
 @NgModule({

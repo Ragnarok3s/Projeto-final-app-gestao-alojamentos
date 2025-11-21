@@ -17,3 +17,25 @@
 .app-header nav a.active {
   text-decoration: underline;
 }
+
+.session {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn.btn-secondary {
+  background: #fff;
+  color: #1976d2;
+}
+
+main {
+  padding: 16px;
+}

@@ -1,8 +1,14 @@
 <header class="app-header">
-  <h1>Gestor de Alojamentos</h1>
+  <div class="brand">
+    <h1>Gestor de Alojamentos</h1>
+  </div>
   <nav>
     <a routerLink="/app/units" routerLinkActive="active">Unidades</a>
   </nav>
+  <div class="session">
+    <span *ngIf="user$ | async as user">{{ user.email }}</span>
+    <button class="btn btn-secondary" type="button" (click)="signOut()">Terminar sessão</button>
+  </div>
 </header>
 <main>
   <router-outlet></router-outlet>

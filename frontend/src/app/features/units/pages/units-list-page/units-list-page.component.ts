@@ -5,11 +5,7 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { Unit } from '../../models/unit.model';
-import {
-  createUnit,
-  loadUnits,
-  updateUnit
-} from '../../state/units.actions';
+import { createUnit, loadUnits, updateUnit } from '../../state/units.actions';
 import { selectAllUnits, selectUnitsError, selectUnitsLoading } from '../../state/units.selectors';
 
 @Component({
@@ -38,6 +34,7 @@ export class UnitsListPageComponent implements OnInit {
 
   submit(): void {
     if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 
@@ -64,5 +61,9 @@ export class UnitsListPageComponent implements OnInit {
 
   viewCalendar(unit: Unit): void {
     this.router.navigate(['/app/units', unit.id, 'calendar']);
+  }
+
+  get nameControl() {
+    return this.form.get('name');
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, map, mergeMap, of } from 'rxjs';
 
 import { UnitsService } from '../services/units.service';
@@ -23,7 +24,7 @@ export class UnitsEffects {
       mergeMap(() =>
         this.unitsService.getUnits().pipe(
           map((units) => loadUnitsSuccess({ units })),
-          catchError((error) => of(loadUnitsFailure({ error })))
+          catchError(() => of(loadUnitsFailure({ error: 'Falha ao carregar unidades.' })))
         )
       )
     )
@@ -35,7 +36,7 @@ export class UnitsEffects {
       mergeMap(({ payload }) =>
         this.unitsService.createUnit(payload).pipe(
           map((unit) => createUnitSuccess({ unit })),
-          catchError((error) => of(createUnitFailure({ error })))
+          catchError((error: HttpErrorResponse) => of(createUnitFailure({ error: this.resolveSaveError(error) })))
         )
       )
     )
@@ -47,11 +48,15 @@ export class UnitsEffects {
       mergeMap(({ id, changes }) =>
         this.unitsService.updateUnit(id, changes).pipe(
           map((unit) => updateUnitSuccess({ unit })),
-          catchError((error) => of(updateUnitFailure({ error })))
+          catchError((error: HttpErrorResponse) => of(updateUnitFailure({ error: this.resolveSaveError(error) })))
         )
       )
     )
   );
 
   constructor(private readonly actions$: Actions, private readonly unitsService: UnitsService) {}
+
+  private resolveSaveError(_: HttpErrorResponse): string {
+    return 'Não foi possível guardar a unidade.';
+  }
 }

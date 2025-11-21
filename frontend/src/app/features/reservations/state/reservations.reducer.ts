@@ -30,17 +30,17 @@ export const reservationsReducer = createReducer(
   initialState,
   on(loadReservations, (state) => ({ ...state, loading: true, error: null })),
   on(loadReservationsSuccess, (state, { reservations }) =>
-    reservationsAdapter.setAll(reservations, { ...state, loading: false })
+    reservationsAdapter.setAll(reservations, { ...state, loading: false, error: null })
   ),
   on(loadReservationsFailure, (state, { error }) => ({ ...state, loading: false, error })),
   on(updateReservation, (state) => ({ ...state, loading: true, error: null })),
   on(updateReservationSuccess, (state, { reservation }) =>
-    reservationsAdapter.upsertOne(reservation, { ...state, loading: false })
+    reservationsAdapter.upsertOne(reservation, { ...state, loading: false, error: null })
   ),
   on(updateReservationFailure, (state, { error }) => ({ ...state, loading: false, error })),
   on(cancelReservation, (state) => ({ ...state, loading: true, error: null })),
   on(cancelReservationSuccess, (state, { reservation }) =>
-    reservationsAdapter.upsertOne(reservation, { ...state, loading: false })
+    reservationsAdapter.upsertOne(reservation, { ...state, loading: false, error: null })
   ),
   on(cancelReservationFailure, (state, { error }) => ({ ...state, loading: false, error }))
 );

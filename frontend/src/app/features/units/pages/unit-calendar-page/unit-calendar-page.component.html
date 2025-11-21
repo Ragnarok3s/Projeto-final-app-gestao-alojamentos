@@ -9,13 +9,14 @@
   </div>
 
   <div class="status" *ngIf="loading$ | async">A carregar reservas...</div>
-  <div class="status error" *ngIf="error$ | async as error">Erro: {{ error }}</div>
+  <div class="status error" *ngIf="error$ | async as error">{{ error }}</div>
 
   <full-calendar class="calendar" [options]="calendarOptions" [events]="calendarEvents$ | async"></full-calendar>
 
   <app-reservation-detail-dialog
     *ngIf="selectedReservation"
     [reservation]="selectedReservation"
+    [errorMessage]="error$ | async"
     (close)="closeDialog()"
     (update)="updateSelectedReservation($event)"
     (cancelReservation)="cancelSelectedReservation()"

@@ -16,6 +16,9 @@
         <div class="form-row">
           <label for="guestName">Nome</label>
           <input id="guestName" type="text" formControlName="guestName" />
+          <div class="error" *ngIf="guestNameControl?.invalid && (guestNameControl.dirty || guestNameControl.touched)">
+            Campo obrigatório.
+          </div>
         </div>
 
         <div class="form-row">
@@ -31,12 +34,21 @@
         <div class="form-row">
           <label for="startDate">Início</label>
           <input id="startDate" type="date" formControlName="startDate" />
+          <div class="error" *ngIf="startDateControl?.invalid && (startDateControl.dirty || startDateControl.touched)">
+            Campo obrigatório.
+          </div>
         </div>
 
         <div class="form-row">
           <label for="endDate">Fim</label>
           <input id="endDate" type="date" formControlName="endDate" />
+          <div class="error" *ngIf="endDateControl?.invalid && (endDateControl.dirty || endDateControl.touched)">
+            Campo obrigatório.
+          </div>
         </div>
+
+        <div class="error" *ngIf="form.errors?.['dateRangeInvalid']">Data de início tem de ser anterior à data de fim.</div>
+        <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
 
         <div class="dialog-actions">
           <button class="btn btn-primary" type="submit" [disabled]="form.invalid">Guardar alterações</button>

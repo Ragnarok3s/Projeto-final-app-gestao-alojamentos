@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 
 import { Reservation } from '../../models/reservation.model';
 
@@ -10,6 +10,7 @@ import { Reservation } from '../../models/reservation.model';
 })
 export class ReservationDetailDialogComponent implements OnChanges {
   @Input() reservation: Reservation | null = null;
+  @Input() errorMessage: string | null = null;
   @Output() close = new EventEmitter<void>();
   @Output() update = new EventEmitter<Partial<Reservation>>();
   @Output() cancelReservation = new EventEmitter<void>();
@@ -17,13 +18,16 @@ export class ReservationDetailDialogComponent implements OnChanges {
   form: FormGroup;
 
   constructor(private readonly fb: FormBuilder) {
-    this.form = this.fb.group({
-      guestName: ['', Validators.required],
-      guestContact: [''],
-      notes: [''],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required]
-    });
+    this.form = this.fb.group(
+      {
+        guestName: ['', Validators.required],
+        guestContact: [''],
+        notes: [''],
+        startDate: ['', Validators.required],
+        endDate: ['', Validators.required]
+      },
+      { validators: this.validateDateRange }
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -46,6 +50,7 @@ export class ReservationDetailDialogComponent implements OnChanges {
 
   submit(): void {
     if (!this.reservation || this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 
@@ -61,5 +66,28 @@ export class ReservationDetailDialogComponent implements OnChanges {
     if (confirmed) {
       this.cancelReservation.emit();
     }
+  }
+
+  get startDateControl(): AbstractControl | null {
+    return this.form.get('startDate');
+  }
+
+  get endDateControl(): AbstractControl | null {
+    return this.form.get('endDate');
+  }
+
+  get guestNameControl(): AbstractControl | null {
+    return this.form.get('guestName');
+  }
+
+  private validateDateRange(group: AbstractControl): ValidationErrors | null {
+    const start = group.get('startDate')?.value;
+    const end = group.get('endDate')?.value;
+
+    if (start && end && new Date(start) >= new Date(end)) {
+      return { dateRangeInvalid: true };
+    }
+
+    return null;
   }
 }
