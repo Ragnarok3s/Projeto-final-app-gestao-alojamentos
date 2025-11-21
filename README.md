@@ -2,6 +2,8 @@
 
 Aplicação web interna para gerir alojamentos e reservas de uma empresa de gestão de propriedades, com frontend Angular e backend Node.js/Express.
 
+> Estado atual: este repositório contém documentação (pasta `docs/`), metadados BMAD (`web-bundles/`) e notas preliminares (`backend/README.md`, `frontend/README.md`). O código-fonte da aplicação ainda não foi adicionado.
+
 ## Principais funcionalidades
 - Registar e gerir unidades de alojamento com detalhes operacionais.
 - Criar, editar e cancelar reservas internas manualmente.
@@ -22,43 +24,20 @@ Aplicação web interna para gerir alojamentos e reservas de uma empresa de gest
 
 ## Como correr o projeto em desenvolvimento
 
-### Requisitos
-- Node.js LTS (>= 18)
-- npm (>= 9)
-- PostgreSQL em execução e acessível
+O código-fonte (Angular + Node.js/Express) ainda não está presente neste repositório. Enquanto isso:
 
-### Backend
-1. Entrar na pasta do backend (ex.: `cd backend`).
-2. Instalar dependências: `npm install`.
-3. Configurar variáveis de ambiente (ex.: `.env`) com pelo menos:
-   - `DATABASE_URL=postgresql://<user>:<password>@localhost:5432/<db>`
-   - `PORT=3000`
-4. Aplicar migrações/seed conforme o ORM escolhido:
-   - Prisma: `npx prisma migrate dev` e `npx prisma db seed` (se existir seed).
-   - TypeORM: `npm run typeorm migration:run`.
-5. Iniciar o servidor em modo desenvolvimento: `npm run dev` (ou `npm run start:dev`).
-
-### Frontend
-1. Entrar na pasta do frontend (ex.: `cd frontend`).
-2. Instalar dependências: `npm install`.
-3. Configurar o ficheiro de ambiente (`src/environments/environment.ts`) com a URL da API, ex.: `apiBaseUrl: 'http://localhost:3000/api'`.
-4. Iniciar o servidor de desenvolvimento: `npm start` ou `ng serve`.
-5. Aceder via browser em `http://localhost:4200`.
+- Consulte a documentação técnica em `docs/` para entender a arquitetura proposta (`architecture.md`), API (`api.md`) e dependências (`env.md`).
+- Use a secção de roadmap abaixo para acompanhar o que falta para tornar o repositório executável.
+- Quando o código for adicionado, este README deverá incluir instruções concretas de instalação e arranque (npm install, scripts, variáveis de ambiente e migrações).
 
 ## Estrutura de pastas (alto nível)
 ```
 <root>/
-├─ backend/
-│  ├─ src/
-│  ├─ prisma/ ou ormconfig/
-│  ├─ package.json
-│  └─ tsconfig.json
-├─ frontend/
-│  ├─ src/
-│  ├─ angular.json
-│  └─ package.json
-├─ docs/
-├─ infra/ (scripts de Docker/CI/CD)
+├─ backend/               # README preliminar, ainda sem código
+├─ frontend/              # README preliminar, ainda sem código
+├─ docs/                  # Documentação técnica (arquitetura, API, env)
+├─ web-bundles/           # Metadados e artefactos BMAD
+├─ CONTRIBUTING.md
 └─ README.md
 ```
 
