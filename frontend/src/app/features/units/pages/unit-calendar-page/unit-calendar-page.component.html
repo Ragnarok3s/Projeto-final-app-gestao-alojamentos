@@ -1,0 +1,24 @@
+<section class="calendar-page">
+  <div class="page-header">
+    <button class="btn btn-secondary" type="button" (click)="goBack()">Voltar</button>
+    <div>
+      <h2>Calendário da unidade {{ unitId }}</h2>
+      <p>Vista mensal/semanal com reservas ativas e canceladas.</p>
+    </div>
+    <button class="btn btn-primary" type="button" (click)="refresh()">Recarregar</button>
+  </div>
+
+  <div class="status" *ngIf="loading$ | async">A carregar reservas...</div>
+  <div class="status error" *ngIf="error$ | async as error">{{ error }}</div>
+
+  <full-calendar class="calendar" [options]="calendarOptions" [events]="calendarEvents$ | async"></full-calendar>
+
+  <app-reservation-detail-dialog
+    *ngIf="selectedReservation"
+    [reservation]="selectedReservation"
+    [errorMessage]="error$ | async"
+    (close)="closeDialog()"
+    (update)="updateSelectedReservation($event)"
+    (cancelReservation)="cancelSelectedReservation()"
+  ></app-reservation-detail-dialog>
+</section>

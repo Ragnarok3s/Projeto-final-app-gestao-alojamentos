@@ -1,0 +1,50 @@
+<section class="units-page">
+  <h2>Unidades</h2>
+
+  <div class="form-card">
+    <h3>{{ editingUnitId ? 'Editar unidade' : 'Nova unidade' }}</h3>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-row">
+        <label for="name">Nome</label>
+        <input id="name" type="text" formControlName="name" required />
+        <div class="error" *ngIf="nameControl?.invalid && (nameControl?.dirty || nameControl?.touched)">
+          Campo obrigatório.
+        </div>
+      </div>
+      <div class="form-row">
+        <label>
+          <input type="checkbox" formControlName="isActive" /> Ativa
+        </label>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit" [disabled]="form.invalid || (loading$ | async)">
+          {{ editingUnitId ? 'Guardar alterações' : 'Criar unidade' }}
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="resetForm()">Limpar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="status" *ngIf="loading$ | async">A carregar...</div>
+  <div class="status error" *ngIf="error$ | async as error">{{ error }}</div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Estado</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let unit of (units$ | async) ?? []">
+        <td>{{ unit.name }}</td>
+        <td>{{ unit.isActive ? 'Ativa' : 'Inativa' }}</td>
+        <td>
+          <button class="btn btn-primary" type="button" (click)="editUnit(unit)">Editar</button>
+          <button class="btn btn-secondary" type="button" (click)="viewCalendar(unit)">Ver calendário</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>

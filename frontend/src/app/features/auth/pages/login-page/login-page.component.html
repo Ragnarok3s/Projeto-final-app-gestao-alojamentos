@@ -1,0 +1,32 @@
+<section class="login-page">
+  <div class="login-card">
+    <h2>Iniciar sessão</h2>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" />
+        <div class="error" *ngIf="emailControl?.invalid && (emailControl?.dirty || emailControl?.touched)">
+          <span *ngIf="emailControl.errors?.['required']">Campo obrigatório.</span>
+          <span *ngIf="emailControl.errors?.['email']">Formato de email inválido.</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="password">Palavra-passe</label>
+        <input id="password" type="password" formControlName="password" />
+        <div
+          class="error"
+          *ngIf="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched)"
+        >
+          <span>Campo obrigatório.</span>
+        </div>
+      </div>
+
+      <div class="error" *ngIf="error$ | async as error">{{ error }}</div>
+
+      <button class="btn btn-primary" type="submit" [disabled]="form.invalid || (loading$ | async)">
+        {{ (loading$ | async) ? 'A entrar...' : 'Entrar' }}
+      </button>
+    </form>
+  </div>
+</section>
