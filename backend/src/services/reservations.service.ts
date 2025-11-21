@@ -2,8 +2,8 @@ import { prisma } from '../config/prisma';
 import { HttpError } from '../utils/httpError';
 
 interface ReservationInput {
-  startDate: string;
-  endDate: string;
+  checkIn: string;
+  checkOut: string;
   guestName: string;
   guestContact?: string;
   notes?: string;
@@ -75,8 +75,8 @@ export async function listReservations(unitId: number, from?: string, to?: strin
 export async function createReservation(unitId: number, payload: ReservationInput) {
   await ensureUnitExists(unitId);
 
-  const startDate = parseDate(payload.startDate, 'startDate');
-  const endDate = parseDate(payload.endDate, 'endDate');
+  const startDate = parseDate(payload.checkIn, 'checkIn');
+  const endDate = parseDate(payload.checkOut, 'checkOut');
 
   if (startDate >= endDate) {
     throw new HttpError(400, 'Data de início deve ser anterior à data de fim');
@@ -103,8 +103,8 @@ export async function updateReservation(reservationId: number, payload: Reservat
     throw new HttpError(404, 'Reserva não encontrada');
   }
 
-  const startDate = parseDate(payload.startDate, 'startDate');
-  const endDate = parseDate(payload.endDate, 'endDate');
+  const startDate = parseDate(payload.checkIn, 'checkIn');
+  const endDate = parseDate(payload.checkOut, 'checkOut');
 
   if (startDate >= endDate) {
     throw new HttpError(400, 'Data de início deve ser anterior à data de fim');
