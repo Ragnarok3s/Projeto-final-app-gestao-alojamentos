@@ -5,6 +5,7 @@ import { Reservation } from '../../models/reservation.model';
 
 @Component({
   selector: 'app-reservation-detail-dialog',
+  standalone: false,
   templateUrl: './reservation-detail-dialog.component.html',
   styleUrls: ['./reservation-detail-dialog.component.scss']
 })

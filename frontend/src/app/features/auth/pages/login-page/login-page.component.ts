@@ -9,6 +9,7 @@ import { selectAuthError, selectAuthLoading, selectIsAuthenticated } from '../..
 
 @Component({
   selector: 'app-login-page',
+  standalone: false,
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.scss']
 })

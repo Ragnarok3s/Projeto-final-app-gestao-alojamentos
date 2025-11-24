@@ -28,7 +28,7 @@
     "@ngrx/store-devtools": "^20.1.0",
     "rxjs": "^7.8.0",
     "tslib": "^2.6.2",
-    "zone.js": "^0.14.2"
+    "zone.js": "~0.15.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^21.0.0",
@@ -36,6 +36,15 @@
     "@angular/compiler-cli": "^21.0.0",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.11.30",
+    "@angular-eslint/builder": "^21.0.1",
+    "@angular-eslint/eslint-plugin": "^21.0.1",
+    "@angular-eslint/eslint-plugin-template": "^21.0.1",
+    "@angular-eslint/schematics": "^21.0.1",
+    "@angular-eslint/template-parser": "^21.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.48.0",
+    "@typescript-eslint/parser": "^8.48.0",
+    "@typescript-eslint/utils": "^8.48.0",
+    "eslint": "^8.57.1",
     "jasmine-core": "~5.1.1",
     "karma": "~6.4.2",
     "karma-chrome-launcher": "~3.2.0",

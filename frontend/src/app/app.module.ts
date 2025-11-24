@@ -9,6 +9,8 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppLayoutComponent } from './layout/app-layout.component';
+import { authReducer } from './features/auth/state/auth.reducer';
+import { AuthEffects } from './features/auth/state/auth.effects';
 import { unitsReducer } from './features/units/state/units.reducer';
 import { UnitsEffects } from './features/units/state/units.effects';
 import { reservationsReducer } from './features/reservations/state/reservations.reducer';
