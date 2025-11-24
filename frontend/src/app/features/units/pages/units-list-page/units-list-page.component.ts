@@ -10,6 +10,7 @@ import { selectAllUnits, selectUnitsError, selectUnitsLoading } from '../../stat
 
 @Component({
   selector: 'app-units-list-page',
+  standalone: false,
   templateUrl: './units-list-page.component.html',
   styleUrls: ['./units-list-page.component.scss']
 })

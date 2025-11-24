@@ -17,6 +17,7 @@ import {
 
 @Component({
   selector: 'app-unit-calendar-page',
+  standalone: false,
   templateUrl: './unit-calendar-page.component.html',
   styleUrls: ['./unit-calendar-page.component.scss']
 })
