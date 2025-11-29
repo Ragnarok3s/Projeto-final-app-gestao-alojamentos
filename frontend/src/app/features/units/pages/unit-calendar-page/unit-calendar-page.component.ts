@@ -2,10 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription, map, of } from 'rxjs';
-import { CalendarOptions, EventClickArg, EventInput } from '@fullcalendar/core';
-import interactionPlugin from '@fullcalendar/interaction';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
+import { DayPilot } from '@daypilot/daypilot-lite-angular';
 
 import { Reservation } from '../../../reservations/models/reservation.model';
 import { cancelReservation, loadReservations, updateReservation } from '../../../reservations/state/reservations.actions';
@@ -27,7 +24,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   to!: string;
 
   reservations$: Observable<Reservation[]> = of([]);
-  calendarEvents$: Observable<EventInput[]> = of([]);
+  calendarEvents$: Observable<DayPilot.EventData[]> = of([]);
   loading$: Observable<boolean> = this.store.select(selectReservationsLoading);
   error$: Observable<string | null> = this.store.select(selectReservationsError);
 
@@ -35,15 +32,11 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   private reservationsSub?: Subscription;
   private currentReservations: Reservation[] = [];
 
-  calendarOptions: CalendarOptions = {
-    initialView: 'dayGridMonth',
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek'
-    },
-    eventClick: this.handleEventClick.bind(this),
-    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin]
+  monthConfig: DayPilot.MonthConfig = {
+    start: DayPilot.Date.today().firstDayOfMonth(),
+    onEventClick: (args) => this.handleEventClick(args),
+    headerDateFormat: 'MMMM yyyy',
+    theme: 'daypilot-light'
   };
 
   constructor(private readonly route: ActivatedRoute, private readonly router: Router, private readonly store: Store) {}
@@ -56,11 +49,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
       }
 
       this.unitId = id;
-      const { from, to } = this.getCurrentMonthRange();
-      this.from = from;
-      this.to = to;
-
-      this.store.dispatch(loadReservations({ unitId: this.unitId, from, to }));
+      const { from, to } = this.updateVisibleRange(this.monthConfig.start);
       this.reservations$ = this.store.select(selectReservationsByUnit(this.unitId));
       this.calendarEvents$ = this.reservations$.pipe(map((reservations) => this.mapReservationsToEvents(reservations)));
 
@@ -83,8 +72,8 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleEventClick(event: EventClickArg): void {
-    const reservationId = Number(event.event.id);
+  handleEventClick(event: DayPilot.MonthEventClickArgs): void {
+    const reservationId = Number(event.e.id());
     const reservation = this.currentReservations.find((r) => r.id === reservationId);
     if (reservation) {
       this.selectedReservation = reservation;
@@ -111,28 +100,34 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     this.store.dispatch(cancelReservation({ id: this.selectedReservation.id }));
   }
 
-  private getCurrentMonthRange(): { from: string; to: string } {
-    const now = new Date();
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-    return {
-      from: firstDay.toISOString().split('T')[0],
-      to: lastDay.toISOString().split('T')[0]
-    };
+  changeMonth(offset: number): void {
+    const newStart = this.monthConfig.start.addMonths(offset);
+    this.monthConfig = { ...this.monthConfig, start: newStart };
+    this.updateVisibleRange(newStart);
   }
 
-  private mapReservationsToEvents(reservations: Reservation[]): EventInput[] {
+  private updateVisibleRange(start: DayPilot.Date): { from: string; to: string } {
+    const firstDay = start.firstDayOfMonth();
+    const lastDay = firstDay.addMonths(1).addDays(-1);
+
+    this.from = firstDay.toString('yyyy-MM-dd');
+    this.to = lastDay.toString('yyyy-MM-dd');
+
+    if (this.unitId) {
+      this.store.dispatch(loadReservations({ unitId: this.unitId, from: this.from, to: this.to }));
+    }
+
+    return { from: this.from, to: this.to };
+  }
+
+  private mapReservationsToEvents(reservations: Reservation[]): DayPilot.EventData[] {
     return reservations.map((reservation) => ({
       id: reservation.id.toString(),
-      title: reservation.guestName,
+      text: reservation.guestName,
       start: reservation.startDate,
       end: reservation.endDate,
       allDay: true,
-      classNames: [
-        'reservation-event',
-        reservation.status === 'CONFIRMED' ? 'reservation-confirmed' : 'reservation-cancelled'
-      ]
+      cssClass: reservation.status === 'CONFIRMED' ? 'reservation-confirmed' : 'reservation-cancelled'
     }));
   }
 }
