@@ -184,12 +184,10 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
 
   private mapReservationsToEvents(reservations: Reservation[]): DayPilot.EventData[] {
     return reservations.map((reservation) => ({
-      id: reservation.id.toString(),
-      text: reservation.guestName,
+      id: reservation.id,
+      text: reservation.guestName || 'Reserva',
       start: reservation.startDate,
-      end: reservation.endDate,
-      allDay: true,
-      cssClass: reservation.status === 'CONFIRMED' ? 'reservation-confirmed' : 'reservation-cancelled'
+      end: reservation.endDate
     }));
   }
 
