@@ -24,6 +24,7 @@ import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
+    // Disponibiliza os componentes DayPilot em toda a aplicação
     DayPilotModule,
     AppRoutingModule,
     StoreModule.forRoot({ auth: authReducer, units: unitsReducer, reservations: reservationsReducer }),
