@@ -1,11 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { DayPilot } from '@daypilot/daypilot-lite-angular';
 import { Observable, Subscription, map, of } from 'rxjs';
-import { CalendarOptions, EventClickArg, EventInput } from '@fullcalendar/core';
-import interactionPlugin from '@fullcalendar/interaction';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
 
 import { Reservation } from '../../../reservations/models/reservation.model';
 import { cancelReservation, loadReservations, updateReservation } from '../../../reservations/state/reservations.actions';
@@ -25,9 +22,11 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   unitId!: number;
   from!: string;
   to!: string;
+  currentDate: Date = new Date();
+  currentView: DayPilot.CalendarViewType = 'Month';
 
   reservations$: Observable<Reservation[]> = of([]);
-  calendarEvents$: Observable<EventInput[]> = of([]);
+  calendarEvents$: Observable<DayPilot.EventData[]> = of([]);
   loading$: Observable<boolean> = this.store.select(selectReservationsLoading);
   error$: Observable<string | null> = this.store.select(selectReservationsError);
 
@@ -35,15 +34,13 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   private reservationsSub?: Subscription;
   private currentReservations: Reservation[] = [];
 
-  calendarOptions: CalendarOptions = {
-    initialView: 'dayGridMonth',
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek'
-    },
-    eventClick: this.handleEventClick.bind(this),
-    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin]
+  calendarConfig: DayPilot.CalendarConfig = {
+    viewType: this.currentView,
+    startDate: this.toIsoDate(this.getMonthStart(this.currentDate)),
+    timeRangeSelectedHandling: 'Disabled',
+    eventMoveHandling: 'Disabled',
+    eventResizeHandling: 'Disabled',
+    onEventClick: (args) => this.handleEventClick(args)
   };
 
   constructor(private readonly route: ActivatedRoute, private readonly router: Router, private readonly store: Store) {}
@@ -56,16 +53,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
       }
 
       this.unitId = id;
-      const { from, to } = this.getCurrentMonthRange();
-      this.from = from;
-      this.to = to;
-
-      this.store.dispatch(loadReservations({ unitId: this.unitId, from, to }));
-      this.reservations$ = this.store.select(selectReservationsByUnit(this.unitId));
-      this.calendarEvents$ = this.reservations$.pipe(map((reservations) => this.mapReservationsToEvents(reservations)));
-
-      this.reservationsSub?.unsubscribe();
-      this.reservationsSub = this.reservations$.subscribe((reservations) => (this.currentReservations = reservations));
+      this.initializeCalendar();
     });
   }
 
@@ -83,8 +71,46 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleEventClick(event: EventClickArg): void {
-    const reservationId = Number(event.event.id);
+  goToToday(): void {
+    this.currentDate = new Date();
+    this.updateCalendarRange(this.currentDate, this.currentView);
+  }
+
+  goToPrevious(): void {
+    const updatedDate = new Date(this.currentDate);
+    if (this.currentView === 'Month') {
+      updatedDate.setDate(1);
+      updatedDate.setMonth(updatedDate.getMonth() - 1);
+    } else {
+      updatedDate.setDate(updatedDate.getDate() - 7);
+    }
+
+    this.updateCalendarRange(updatedDate, this.currentView);
+  }
+
+  goToNext(): void {
+    const updatedDate = new Date(this.currentDate);
+    if (this.currentView === 'Month') {
+      updatedDate.setDate(1);
+      updatedDate.setMonth(updatedDate.getMonth() + 1);
+    } else {
+      updatedDate.setDate(updatedDate.getDate() + 7);
+    }
+
+    this.updateCalendarRange(updatedDate, this.currentView);
+  }
+
+  setView(view: DayPilot.CalendarViewType): void {
+    if (this.currentView === view) {
+      return;
+    }
+
+    this.currentView = view;
+    this.updateCalendarRange(this.currentDate, this.currentView);
+  }
+
+  handleEventClick(event: DayPilot.EventClickArgs): void {
+    const reservationId = Number(event.e.id());
     const reservation = this.currentReservations.find((r) => r.id === reservationId);
     if (reservation) {
       this.selectedReservation = reservation;
@@ -111,28 +137,77 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     this.store.dispatch(cancelReservation({ id: this.selectedReservation.id }));
   }
 
-  private getCurrentMonthRange(): { from: string; to: string } {
-    const now = new Date();
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  private initializeCalendar(): void {
+    this.updateCalendarRange(this.currentDate, this.currentView);
+
+    this.reservations$ = this.store.select(selectReservationsByUnit(this.unitId));
+    this.calendarEvents$ = this.reservations$.pipe(map((reservations) => this.mapReservationsToEvents(reservations)));
+
+    this.reservationsSub?.unsubscribe();
+    this.reservationsSub = this.reservations$.subscribe((reservations) => (this.currentReservations = reservations));
+  }
+
+  private updateCalendarRange(date: Date, view: DayPilot.CalendarViewType): void {
+    this.currentDate = date;
+    this.currentView = view;
+
+    const { startDate, from, to } = this.getRangeForView(date, view);
+    this.from = from;
+    this.to = to;
+    this.calendarConfig = { ...this.calendarConfig, startDate, viewType: view };
+
+    this.refresh();
+  }
+
+  private getRangeForView(date: Date, view: DayPilot.CalendarViewType): { startDate: string; from: string; to: string } {
+    if (view === 'Month') {
+      const firstDay = this.getMonthStart(date);
+      const lastDay = new Date(firstDay.getFullYear(), firstDay.getMonth() + 1, 0);
+
+      return {
+        startDate: this.toIsoDate(firstDay),
+        from: this.toIsoDate(firstDay),
+        to: this.toIsoDate(lastDay)
+      };
+    }
+
+    const weekStart = this.getWeekStart(date);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
 
     return {
-      from: firstDay.toISOString().split('T')[0],
-      to: lastDay.toISOString().split('T')[0]
+      startDate: this.toIsoDate(weekStart),
+      from: this.toIsoDate(weekStart),
+      to: this.toIsoDate(weekEnd)
     };
   }
 
-  private mapReservationsToEvents(reservations: Reservation[]): EventInput[] {
+  private mapReservationsToEvents(reservations: Reservation[]): DayPilot.EventData[] {
     return reservations.map((reservation) => ({
-      id: reservation.id.toString(),
-      title: reservation.guestName,
+      id: reservation.id,
+      text: reservation.guestName,
       start: reservation.startDate,
       end: reservation.endDate,
       allDay: true,
-      classNames: [
-        'reservation-event',
+      cssClass: `reservation-event ${
         reservation.status === 'CONFIRMED' ? 'reservation-confirmed' : 'reservation-cancelled'
-      ]
+      }`
     }));
+  }
+
+  private getMonthStart(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+  }
+
+  private getWeekStart(date: Date): Date {
+    const weekStart = new Date(date);
+    const day = weekStart.getDay();
+    const diff = (day + 6) % 7; // start week on Monday
+    weekStart.setDate(weekStart.getDate() - diff);
+    return weekStart;
+  }
+
+  private toIsoDate(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
 }
