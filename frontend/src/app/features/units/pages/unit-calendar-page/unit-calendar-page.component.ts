@@ -34,7 +34,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
 
   monthConfig: DayPilot.MonthConfig = {
     start: DayPilot.Date.today().firstDayOfMonth(),
-    eventClick: (args) => this.handleEventClick(args),
+    onEventClick: (args) => this.handleEventClick(args),
     headerDateFormat: 'MMMM yyyy',
     theme: 'daypilot-light'
   };
