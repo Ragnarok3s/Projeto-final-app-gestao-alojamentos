@@ -5,6 +5,20 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+.calendar-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
+  gap: 12px;
+}
+
+.toolbar-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .page-header {
   display: flex;
   align-items: center;
@@ -28,13 +42,18 @@
   border-radius: 4px;
 }
 
-.reservation-event.reservation-confirmed {
+.calendar .reservation-event {
+  border-radius: 2px;
+  border: 1px solid transparent;
+}
+
+.calendar .reservation-event.reservation-confirmed {
   background: #4caf50 !important;
   border-color: #388e3c !important;
   color: #fff !important;
 }
 
-.reservation-event.reservation-cancelled {
+.calendar .reservation-event.reservation-cancelled {
   background: #e0e0e0 !important;
   border-color: #bdbdbd !important;
   color: #424242 !important;
