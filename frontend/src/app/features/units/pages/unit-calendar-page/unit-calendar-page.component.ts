@@ -39,7 +39,8 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   config: DayPilot.CalendarConfig = {
     viewType: 'Month',
     startDate: DayPilot.Date.today().firstDayOfMonth(),
-    onEventClick: (args) => this.handleEventClick(args),
+    onEventClick: (args) => this.onEventClick(args),
+    onTimeRangeSelected: (args) => this.onTimeRangeSelected(args),
     headerDateFormat: 'MMMM yyyy',
     theme: 'daypilot-light'
   };
@@ -118,12 +119,19 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     this.updateCalendarRange(this.currentDate, this.currentView);
   }
 
-  handleEventClick(event: DayPilot.EventClickArgs): void {
+  onEventClick(event: DayPilot.EventClickArgs): void {
     const reservationId = Number(event.e.id());
     const reservation = this.currentReservations.find((r) => r.id === reservationId);
     if (reservation) {
       this.selectedReservation = reservation;
     }
+  }
+
+  onTimeRangeSelected(args: DayPilot.TimeRangeSelectedArgs): void {
+    const startDate = args.start.toDate();
+    this.currentView = 'Week';
+    this.updateCalendarRange(startDate, 'Week');
+    args.control?.clearSelection();
   }
 
   closeDialog(): void {
@@ -157,6 +165,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     const start = view === 'Month' ? new DayPilot.Date(this.getMonthStart(date)) : new DayPilot.Date(this.getWeekStart(date));
 
     this.currentDate = date;
+    this.currentView = view;
     this.config = { ...this.config, viewType: view, startDate: start };
     this.updateVisibleRange(start);
   }
