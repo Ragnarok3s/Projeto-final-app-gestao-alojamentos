@@ -75,7 +75,45 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleEventClick(event: DayPilot.MonthEventClickArgs): void {
+  goToToday(): void {
+    this.currentDate = new Date();
+    this.updateCalendarRange(this.currentDate, this.currentView);
+  }
+
+  goToPrevious(): void {
+    const updatedDate = new Date(this.currentDate);
+    if (this.currentView === 'Month') {
+      updatedDate.setDate(1);
+      updatedDate.setMonth(updatedDate.getMonth() - 1);
+    } else {
+      updatedDate.setDate(updatedDate.getDate() - 7);
+    }
+
+    this.updateCalendarRange(updatedDate, this.currentView);
+  }
+
+  goToNext(): void {
+    const updatedDate = new Date(this.currentDate);
+    if (this.currentView === 'Month') {
+      updatedDate.setDate(1);
+      updatedDate.setMonth(updatedDate.getMonth() + 1);
+    } else {
+      updatedDate.setDate(updatedDate.getDate() + 7);
+    }
+
+    this.updateCalendarRange(updatedDate, this.currentView);
+  }
+
+  setView(view: DayPilot.CalendarViewType): void {
+    if (this.currentView === view) {
+      return;
+    }
+
+    this.currentView = view;
+    this.updateCalendarRange(this.currentDate, this.currentView);
+  }
+
+  handleEventClick(event: DayPilot.EventClickArgs): void {
     const reservationId = Number(event.e.id());
     const reservation = this.currentReservations.find((r) => r.id === reservationId);
     if (reservation) {
