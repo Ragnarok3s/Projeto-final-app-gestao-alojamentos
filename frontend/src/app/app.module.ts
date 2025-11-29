@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DayPilotModule } from '@daypilot/daypilot-lite-angular';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -23,6 +24,7 @@ import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
+    DayPilotModule,
     AppRoutingModule,
     StoreModule.forRoot({ auth: authReducer, units: unitsReducer, reservations: reservationsReducer }),
     EffectsModule.forRoot([AuthEffects, UnitsEffects, ReservationsEffects]),

@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
 import { Observable, Subscription, map, of } from 'rxjs';
-import { DayPilot } from '@daypilot/daypilot-lite-angular';
 
 import { Reservation } from '../../../reservations/models/reservation.model';
 import { cancelReservation, loadReservations, updateReservation } from '../../../reservations/state/reservations.actions';
