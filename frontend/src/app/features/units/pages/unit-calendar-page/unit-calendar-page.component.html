@@ -13,11 +13,11 @@
 
   <div class="calendar-header">
     <button class="btn btn-secondary" type="button" (click)="changeMonth(-1)">&#8592; Mês anterior</button>
-    <span class="current-month">{{ monthConfig.start.toString('MMMM yyyy') }}</span>
+    <span class="current-month">{{ config.startDate?.toString('MMMM yyyy') }}</span>
     <button class="btn btn-secondary" type="button" (click)="changeMonth(1)">Próximo mês &#8594;</button>
   </div>
 
-  <daypilot-month class="calendar" [config]="monthConfig" [events]="calendarEvents$ | async"></daypilot-month>
+  <daypilot-calendar class="calendar" [events]="events" [config]="config"></daypilot-calendar>
 
   <app-reservation-detail-dialog
     *ngIf="selectedReservation"
