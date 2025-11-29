@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { DayPilot } from '@daypilot/daypilot-lite-angular';
-import { Observable, Subscription, map, of } from 'rxjs';
+import { DayPilot, DayPilotCalendarComponent } from '@daypilot/daypilot-lite-angular';
+import { Observable, Subscription, of } from 'rxjs';
 
 import { Reservation } from '../../../reservations/models/reservation.model';
 import { cancelReservation, loadReservations, updateReservation } from '../../../reservations/state/reservations.actions';
@@ -19,6 +19,8 @@ import {
   styleUrls: ['./unit-calendar-page.component.scss']
 })
 export class UnitCalendarPageComponent implements OnInit, OnDestroy {
+  @ViewChild(DayPilotCalendarComponent) calendar?: DayPilotCalendarComponent;
+
   unitId!: number;
   from!: string;
   to!: string;
@@ -26,7 +28,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   currentView: DayPilot.CalendarViewType = 'Month';
 
   reservations$: Observable<Reservation[]> = of([]);
-  calendarEvents$: Observable<DayPilot.EventData[]> = of([]);
+  events: DayPilot.EventData[] = [];
   loading$: Observable<boolean> = this.store.select(selectReservationsLoading);
   error$: Observable<string | null> = this.store.select(selectReservationsError);
 
@@ -34,8 +36,9 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   private reservationsSub?: Subscription;
   private currentReservations: Reservation[] = [];
 
-  monthConfig: DayPilot.MonthConfig = {
-    start: DayPilot.Date.today().firstDayOfMonth(),
+  config: DayPilot.CalendarConfig = {
+    viewType: 'Month',
+    startDate: DayPilot.Date.today().firstDayOfMonth(),
     onEventClick: (args) => this.handleEventClick(args),
     headerDateFormat: 'MMMM yyyy',
     theme: 'daypilot-light'
@@ -51,12 +54,15 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
       }
 
       this.unitId = id;
-      const { from, to } = this.updateVisibleRange(this.monthConfig.start);
+      const start = new DayPilot.Date(this.config.startDate);
+      const { from, to } = this.updateVisibleRange(start);
       this.reservations$ = this.store.select(selectReservationsByUnit(this.unitId));
-      this.calendarEvents$ = this.reservations$.pipe(map((reservations) => this.mapReservationsToEvents(reservations)));
 
       this.reservationsSub?.unsubscribe();
-      this.reservationsSub = this.reservations$.subscribe((reservations) => (this.currentReservations = reservations));
+      this.reservationsSub = this.reservations$.subscribe((reservations) => {
+        this.currentReservations = reservations;
+        this.events = this.mapReservationsToEvents(reservations);
+      });
     });
   }
 
@@ -141,14 +147,25 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   }
 
   changeMonth(offset: number): void {
-    const newStart = this.monthConfig.start.addMonths(offset);
-    this.monthConfig = { ...this.monthConfig, start: newStart };
+    const startDate = new DayPilot.Date(this.config.startDate || DayPilot.Date.today());
+    const newStart = startDate.addMonths(offset);
+    this.config = { ...this.config, startDate: newStart };
     this.updateVisibleRange(newStart);
   }
 
+  private updateCalendarRange(date: Date, view: DayPilot.CalendarViewType): void {
+    const start = view === 'Month' ? new DayPilot.Date(this.getMonthStart(date)) : new DayPilot.Date(this.getWeekStart(date));
+
+    this.currentDate = date;
+    this.config = { ...this.config, viewType: view, startDate: start };
+    this.updateVisibleRange(start);
+  }
+
   private updateVisibleRange(start: DayPilot.Date): { from: string; to: string } {
-    const firstDay = start.firstDayOfMonth();
-    const lastDay = firstDay.addMonths(1).addDays(-1);
+    const viewType = this.config.viewType || 'Month';
+    const firstDay =
+      viewType === 'Week' ? new DayPilot.Date(this.getWeekStart(start.toDate())) : start.firstDayOfMonth();
+    const lastDay = viewType === 'Week' ? firstDay.addDays(6) : firstDay.addMonths(1).addDays(-1);
 
     this.from = firstDay.toString('yyyy-MM-dd');
     this.to = lastDay.toString('yyyy-MM-dd');
