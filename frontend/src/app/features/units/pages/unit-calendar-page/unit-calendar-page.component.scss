@@ -42,18 +42,25 @@
   border-radius: 4px;
 }
 
-.calendar .reservation-event {
-  border-radius: 2px;
-  border: 1px solid transparent;
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
 }
 
-.calendar .reservation-event.reservation-confirmed {
+.current-month {
+  font-weight: 600;
+}
+
+.reservation-confirmed {
   background: #4caf50 !important;
   border-color: #388e3c !important;
   color: #fff !important;
 }
 
-.calendar .reservation-event.reservation-cancelled {
+.reservation-cancelled {
   background: #e0e0e0 !important;
   border-color: #bdbdbd !important;
   color: #424242 !important;

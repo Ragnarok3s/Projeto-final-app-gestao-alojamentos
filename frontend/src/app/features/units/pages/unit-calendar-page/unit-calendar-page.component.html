@@ -11,35 +11,13 @@
   <div class="status" *ngIf="loading$ | async">A carregar reservas...</div>
   <div class="status error" *ngIf="error$ | async as error">{{ error }}</div>
 
-  <div class="calendar-toolbar">
-    <div class="toolbar-group">
-      <button class="btn btn-secondary" type="button" (click)="goToPrevious()">Anterior</button>
-      <button class="btn btn-secondary" type="button" (click)="goToToday()">Hoje</button>
-      <button class="btn btn-secondary" type="button" (click)="goToNext()">Seguinte</button>
-    </div>
-    <div class="toolbar-group">
-      <button
-        class="btn"
-        type="button"
-        [class.btn-primary]="currentView === 'Month'"
-        [class.btn-secondary]="currentView !== 'Month'"
-        (click)="setView('Month')"
-      >
-        Mês
-      </button>
-      <button
-        class="btn"
-        type="button"
-        [class.btn-primary]="currentView === 'Week'"
-        [class.btn-secondary]="currentView !== 'Week'"
-        (click)="setView('Week')"
-      >
-        Semana
-      </button>
-    </div>
+  <div class="calendar-header">
+    <button class="btn btn-secondary" type="button" (click)="changeMonth(-1)">&#8592; Mês anterior</button>
+    <span class="current-month">{{ monthConfig.start.toString('MMMM yyyy') }}</span>
+    <button class="btn btn-secondary" type="button" (click)="changeMonth(1)">Próximo mês &#8594;</button>
   </div>
 
-  <daypilot-calendar class="calendar" [config]="calendarConfig" [events]="calendarEvents$ | async"></daypilot-calendar>
+  <daypilot-month class="calendar" [config]="monthConfig" [events]="calendarEvents$ | async"></daypilot-month>
 
   <app-reservation-detail-dialog
     *ngIf="selectedReservation"
