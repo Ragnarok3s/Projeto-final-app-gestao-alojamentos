@@ -1,0 +1,30 @@
+<section class="register-page">
+  <div class="register-card">
+    <h2>Criar conta</h2>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" />
+        <div class="error" *ngIf="emailControl?.invalid && (emailControl?.dirty || emailControl?.touched)">
+          <span *ngIf="emailControl.errors?.['required']">Campo obrigatório.</span>
+          <span *ngIf="emailControl.errors?.['email']">Formato de email inválido.</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="password">Palavra-passe</label>
+        <input id="password" type="password" formControlName="password" />
+        <div class="error" *ngIf="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched)">
+          <span *ngIf="passwordControl?.errors?.['required']">Campo obrigatório.</span>
+          <span *ngIf="passwordControl?.errors?.['minlength']">Mínimo de 6 caracteres.</span>
+        </div>
+      </div>
+
+      <div class="error" *ngIf="error$ | async as error">{{ error }}</div>
+
+      <button class="btn btn-primary" type="submit" [disabled]="form.invalid || (loading$ | async)">
+        {{ (loading$ | async) ? 'A registar...' : 'Registar' }}
+      </button>
+    </form>
+  </div>
+</section>
