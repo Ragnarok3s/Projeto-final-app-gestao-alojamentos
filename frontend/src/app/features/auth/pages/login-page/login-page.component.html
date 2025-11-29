@@ -27,6 +27,10 @@
       <button class="btn btn-primary" type="submit" [disabled]="form.invalid || (loading$ | async)">
         {{ (loading$ | async) ? 'A entrar...' : 'Entrar' }}
       </button>
+
+      <p>Ainda não tem conta?
+        <a routerLink="/register">Criar conta</a>
+      </p>
     </form>
   </div>
 </section>
