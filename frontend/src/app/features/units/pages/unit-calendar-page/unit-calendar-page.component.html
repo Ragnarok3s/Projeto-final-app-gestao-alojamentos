@@ -17,7 +17,13 @@
     <button class="btn btn-secondary" type="button" (click)="changeMonth(1)">Próximo mês &#8594;</button>
   </div>
 
-  <daypilot-calendar class="calendar" [events]="events" [config]="config"></daypilot-calendar>
+  <app-calendar
+    class="calendar"
+    [events]="events"
+    [config]="config"
+    (eventClick)="onEventClick($event)"
+    (timeRangeSelected)="onTimeRangeSelected($event)"
+  ></app-calendar>
 
   <app-reservation-detail-dialog
     *ngIf="selectedReservation"

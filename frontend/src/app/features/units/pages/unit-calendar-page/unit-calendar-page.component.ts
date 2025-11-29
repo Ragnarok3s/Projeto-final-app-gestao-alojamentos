@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { DayPilot, DayPilotCalendarComponent } from '@daypilot/daypilot-lite-angular';
+import { DayPilot } from '@daypilot/daypilot-lite-angular';
 import { Observable, Subscription, of } from 'rxjs';
 
 import { Reservation } from '../../../reservations/models/reservation.model';
@@ -19,8 +19,6 @@ import {
   styleUrls: ['./unit-calendar-page.component.scss']
 })
 export class UnitCalendarPageComponent implements OnInit, OnDestroy {
-  @ViewChild(DayPilotCalendarComponent) calendar?: DayPilotCalendarComponent;
-
   unitId!: number;
   from!: string;
   to!: string;
@@ -39,8 +37,6 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   config: DayPilot.CalendarConfig = {
     viewType: 'Month',
     startDate: DayPilot.Date.today().firstDayOfMonth(),
-    onEventClick: (args) => this.onEventClick(args),
-    onTimeRangeSelected: (args) => this.onTimeRangeSelected(args),
     headerDateFormat: 'MMMM yyyy',
     theme: 'daypilot-light'
   };
@@ -188,12 +184,10 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
 
   private mapReservationsToEvents(reservations: Reservation[]): DayPilot.EventData[] {
     return reservations.map((reservation) => ({
-      id: reservation.id.toString(),
-      text: reservation.guestName,
+      id: reservation.id,
+      text: reservation.guestName || 'Reserva',
       start: reservation.startDate,
-      end: reservation.endDate,
-      allDay: true,
-      cssClass: reservation.status === 'CONFIRMED' ? 'reservation-confirmed' : 'reservation-cancelled'
+      end: reservation.endDate
     }));
   }
 
