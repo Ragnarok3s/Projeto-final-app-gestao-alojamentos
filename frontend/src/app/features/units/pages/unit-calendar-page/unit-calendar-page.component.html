@@ -11,7 +11,35 @@
   <div class="status" *ngIf="loading$ | async">A carregar reservas...</div>
   <div class="status error" *ngIf="error$ | async as error">{{ error }}</div>
 
-  <full-calendar class="calendar" [options]="calendarOptions" [events]="calendarEvents$ | async"></full-calendar>
+  <div class="calendar-toolbar">
+    <div class="toolbar-group">
+      <button class="btn btn-secondary" type="button" (click)="goToPrevious()">Anterior</button>
+      <button class="btn btn-secondary" type="button" (click)="goToToday()">Hoje</button>
+      <button class="btn btn-secondary" type="button" (click)="goToNext()">Seguinte</button>
+    </div>
+    <div class="toolbar-group">
+      <button
+        class="btn"
+        type="button"
+        [class.btn-primary]="currentView === 'Month'"
+        [class.btn-secondary]="currentView !== 'Month'"
+        (click)="setView('Month')"
+      >
+        Mês
+      </button>
+      <button
+        class="btn"
+        type="button"
+        [class.btn-primary]="currentView === 'Week'"
+        [class.btn-secondary]="currentView !== 'Week'"
+        (click)="setView('Week')"
+      >
+        Semana
+      </button>
+    </div>
+  </div>
+
+  <daypilot-calendar class="calendar" [config]="calendarConfig" [events]="calendarEvents$ | async"></daypilot-calendar>
 
   <app-reservation-detail-dialog
     *ngIf="selectedReservation"
