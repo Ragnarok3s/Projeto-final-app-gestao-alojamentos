@@ -1,6 +1,6 @@
 # Gestor de Alojamentos — Frontend
 
-SPA interna em Angular para operadores gerirem unidades de alojamento e reservas no browser, com estado global em NgRx e calendarização via FullCalendar.
+SPA interna em Angular para operadores gerirem unidades de alojamento e reservas no browser, com estado global em NgRx e calendarização via DayPilot.
 
 ## Requisitos para desenvolvimento
 - Node.js LTS (>= 18)
@@ -34,7 +34,7 @@ Principais slices:
 - `reservations` — reservas por unidade, cache normalizada com `@ngrx/entity`, efeitos para chamadas à API.
 
 ## Componentes principais
-- **Componente de calendário**: renderiza calendário (FullCalendar ou similar) e sincroniza eventos com o slice `reservations`.
+- **Componente de calendário**: renderiza calendário (DayPilot) e sincroniza eventos com o slice `reservations`.
 - **Modal de reserva**: criar/editar/cancelar reservas, com validação de datas e envio via efeitos NgRx.
 - **Listagem de unidades**: tabela/cartões com ações de seleção e navegação para o calendário.
 
