@@ -79,6 +79,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   goToPrevious(): void {
     const updatedDate = new Date(this.currentDate);
     if (this.currentView === 'Month') {
+      updatedDate.setDate(1);
       updatedDate.setMonth(updatedDate.getMonth() - 1);
     } else {
       updatedDate.setDate(updatedDate.getDate() - 7);
@@ -90,6 +91,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   goToNext(): void {
     const updatedDate = new Date(this.currentDate);
     if (this.currentView === 'Month') {
+      updatedDate.setDate(1);
       updatedDate.setMonth(updatedDate.getMonth() + 1);
     } else {
       updatedDate.setDate(updatedDate.getDate() + 7);
