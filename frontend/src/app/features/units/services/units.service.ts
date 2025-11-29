@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import { Unit } from '../models/unit.model';
+import { Unit, UnitPayload } from '../models/unit.model';
 
 @Injectable({ providedIn: 'root' })
 export class UnitsService {
@@ -24,13 +24,13 @@ export class UnitsService {
     });
   }
 
-  createUnit(payload: Partial<Unit>): Observable<Unit> {
+  createUnit(payload: UnitPayload): Observable<Unit> {
     return this.http.post<Unit>(this.baseUrl, payload, {
       headers: this.getAuthHeaders()
     });
   }
 
-  updateUnit(id: number, payload: Partial<Unit>): Observable<Unit> {
+  updateUnit(id: number, payload: Partial<UnitPayload>): Observable<Unit> {
     return this.http.put<Unit>(`${this.baseUrl}/${id}`, payload, {
       headers: this.getAuthHeaders()
     });
