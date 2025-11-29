@@ -11,7 +11,13 @@
   <div class="status" *ngIf="loading$ | async">A carregar reservas...</div>
   <div class="status error" *ngIf="error$ | async as error">{{ error }}</div>
 
-  <full-calendar class="calendar" [options]="calendarOptions" [events]="calendarEvents$ | async"></full-calendar>
+  <div class="calendar-header">
+    <button class="btn btn-secondary" type="button" (click)="changeMonth(-1)">&#8592; Mês anterior</button>
+    <span class="current-month">{{ monthConfig.start.toString('MMMM yyyy') }}</span>
+    <button class="btn btn-secondary" type="button" (click)="changeMonth(1)">Próximo mês &#8594;</button>
+  </div>
+
+  <daypilot-month class="calendar" [config]="monthConfig" [events]="calendarEvents$ | async"></daypilot-month>
 
   <app-reservation-detail-dialog
     *ngIf="selectedReservation"
