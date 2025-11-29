@@ -6,7 +6,7 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'login',
     component: LoginPageComponent
   },
   {
