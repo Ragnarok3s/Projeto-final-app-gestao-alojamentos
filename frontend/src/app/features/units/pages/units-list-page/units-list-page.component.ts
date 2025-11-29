@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
-import { Unit } from '../../models/unit.model';
+import { Unit, UnitPayload } from '../../models/unit.model';
 import { createUnit, loadUnits, updateUnit } from '../../state/units.actions';
 import { selectAllUnits, selectUnitsError, selectUnitsLoading } from '../../state/units.selectors';
 
@@ -25,6 +25,7 @@ export class UnitsListPageComponent implements OnInit {
   constructor(private readonly store: Store, private readonly fb: FormBuilder, private readonly router: Router) {
     this.form = this.fb.group({
       name: ['', Validators.required],
+      capacity: [null, [Validators.required, Validators.min(1)]],
       isActive: [true]
     });
   }
@@ -39,7 +40,12 @@ export class UnitsListPageComponent implements OnInit {
       return;
     }
 
-    const payload = this.form.value as Partial<Unit>;
+    const { name, capacity, isActive } = this.form.value;
+    const payload: UnitPayload = {
+      name: name?.trim(),
+      capacity: Number(capacity),
+      isActive: Boolean(isActive)
+    };
 
     if (this.editingUnitId) {
       this.store.dispatch(updateUnit({ id: this.editingUnitId, changes: payload }));
@@ -52,12 +58,12 @@ export class UnitsListPageComponent implements OnInit {
 
   editUnit(unit: Unit): void {
     this.editingUnitId = unit.id;
-    this.form.setValue({ name: unit.name, isActive: unit.isActive });
+    this.form.setValue({ name: unit.name, capacity: unit.capacity, isActive: unit.isActive });
   }
 
   resetForm(): void {
     this.editingUnitId = null;
-    this.form.reset({ name: '', isActive: true });
+    this.form.reset({ name: '', capacity: null, isActive: true });
   }
 
   viewCalendar(unit: Unit): void {
@@ -66,5 +72,9 @@ export class UnitsListPageComponent implements OnInit {
 
   get nameControl() {
     return this.form.get('name');
+  }
+
+  get capacityControl() {
+    return this.form.get('capacity');
   }
 }

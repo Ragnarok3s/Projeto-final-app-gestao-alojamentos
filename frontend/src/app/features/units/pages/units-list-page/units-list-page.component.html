@@ -12,6 +12,14 @@
         </div>
       </div>
       <div class="form-row">
+        <label for="capacity">Capacidade</label>
+        <input id="capacity" type="number" min="1" formControlName="capacity" required />
+        <div class="error" *ngIf="capacityControl?.invalid && (capacityControl?.dirty || capacityControl?.touched)">
+          <span *ngIf="capacityControl?.errors?.['required']">Campo obrigatório.</span>
+          <span *ngIf="capacityControl?.errors?.['min']">Capacidade deve ser maior que zero.</span>
+        </div>
+      </div>
+      <div class="form-row">
         <label>
           <input type="checkbox" formControlName="isActive" /> Ativa
         </label>
@@ -32,6 +40,7 @@
     <thead>
       <tr>
         <th>Nome</th>
+        <th>Capacidade</th>
         <th>Estado</th>
         <th>Ações</th>
       </tr>
@@ -39,6 +48,7 @@
     <tbody>
       <tr *ngFor="let unit of (units$ | async) ?? []">
         <td>{{ unit.name }}</td>
+        <td>{{ unit.capacity }}</td>
         <td>{{ unit.isActive ? 'Ativa' : 'Inativa' }}</td>
         <td>
           <button class="btn btn-primary" type="button" (click)="editUnit(unit)">Editar</button>
