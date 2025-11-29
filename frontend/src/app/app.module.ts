@@ -24,7 +24,7 @@ import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    // Disponibiliza os componentes DayPilot em toda a aplicação
+    // Disponibiliza o DayPilot em toda a aplicação, substituindo o FullCalendar
     DayPilotModule,
     AppRoutingModule,
     StoreModule.forRoot({ auth: authReducer, units: unitsReducer, reservations: reservationsReducer }),
