@@ -7,6 +7,7 @@ interface ReservationInput {
   guestName: string;
   guestContact?: string;
   notes?: string;
+  status?: 'CONFIRMED' | 'CANCELLED';
 }
 
 function parseDate(input: string, field: string): Date {
@@ -77,12 +78,15 @@ export async function createReservation(unitId: number, payload: ReservationInpu
 
   const startDate = parseDate(payload.checkIn, 'checkIn');
   const endDate = parseDate(payload.checkOut, 'checkOut');
+  const status = payload.status === 'CANCELLED' ? 'CANCELLED' : 'CONFIRMED';
 
   if (startDate >= endDate) {
     throw new HttpError(400, 'Data de início deve ser anterior à data de fim');
   }
 
-  await checkDateConflicts(unitId, startDate, endDate);
+  if (status === 'CONFIRMED') {
+    await checkDateConflicts(unitId, startDate, endDate);
+  }
 
   return prisma.reservation.create({
     data: {
@@ -92,7 +96,7 @@ export async function createReservation(unitId: number, payload: ReservationInpu
       guestName: payload.guestName,
       guestContact: payload.guestContact,
       notes: payload.notes,
-      status: 'CONFIRMED',
+      status,
     },
   });
 }

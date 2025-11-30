@@ -13,6 +13,18 @@
   background: #fafafa;
 }
 
+.units-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.units-header__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .form-actions {
   display: flex;
   gap: 8px;

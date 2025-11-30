@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 
 import { Reservation } from '../models/reservation.model';
+import { CreateReservationPayload } from '../models/reservation.model';
 
 export const loadReservations = createAction(
   '[Reservations] Load Reservations',
@@ -29,6 +30,21 @@ export const updateReservationSuccess = createAction(
 
 export const updateReservationFailure = createAction(
   '[Reservations] Update Reservation Failure',
+  props<{ error: string }>()
+);
+
+export const createReservation = createAction(
+  '[Reservations] Create Reservation',
+  props<{ reservation: CreateReservationPayload }>()
+);
+
+export const createReservationSuccess = createAction(
+  '[Reservations] Create Reservation Success',
+  props<{ reservation: Reservation }>()
+);
+
+export const createReservationFailure = createAction(
+  '[Reservations] Create Reservation Failure',
   props<{ error: string }>()
 );
 
