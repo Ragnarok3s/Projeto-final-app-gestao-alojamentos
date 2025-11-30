@@ -1,5 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { DayPilot } from '@daypilot/daypilot-lite-angular';
+import { DayPilot, DayPilotModule } from '@daypilot/daypilot-lite-angular';
 
 import { ReservationsService } from '../../../reservations/services/reservations.service';
 import { Reservation } from '../../../reservations/models/reservation.model';
@@ -7,7 +8,9 @@ import { Reservation } from '../../../reservations/models/reservation.model';
 @Component({
   selector: 'app-overview-calendar-page',
   templateUrl: './overview-calendar-page.component.html',
-  styleUrls: ['./overview-calendar-page.component.scss']
+  styleUrls: ['./overview-calendar-page.component.scss'],
+  standalone: true,
+  imports: [CommonModule, DayPilotModule]
 })
 export class OverviewCalendarPageComponent implements OnInit {
   viewDate = DayPilot.Date.today().firstDayOfMonth();
@@ -38,7 +41,9 @@ export class OverviewCalendarPageComponent implements OnInit {
   private mapReservationToEvent(reservation: Reservation): DayPilot.EventData {
     const start = new DayPilot.Date(reservation.startDate as any);
     const end = new DayPilot.Date(reservation.endDate as any);
-    const nights = start.daysDiff(end);
+    const startDate = new Date(reservation.startDate as any);
+    const endDate = new Date(reservation.endDate as any);
+    const nights = Math.max(0, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
 
     const guests = reservation.guestsCount ?? 0;
     const channel = (reservation.channel || 'direct').toLowerCase();

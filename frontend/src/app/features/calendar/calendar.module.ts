@@ -6,7 +6,7 @@ import { CalendarRoutingModule } from './calendar-routing.module';
 import { OverviewCalendarPageComponent } from './pages/overview-calendar-page/overview-calendar-page.component';
 
 @NgModule({
-  declarations: [OverviewCalendarPageComponent],
-  imports: [CommonModule, DayPilotModule, CalendarRoutingModule]
+  declarations: [],
+  imports: [CommonModule, DayPilotModule, CalendarRoutingModule, OverviewCalendarPageComponent]
 })
 export class CalendarModule {}
