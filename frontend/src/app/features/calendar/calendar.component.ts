@@ -1,10 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
 
-type CalendarView = DayPilot.CalendarPropsAndEvents['viewType'] | 'Month';
-type CalendarConfig = Omit<DayPilot.CalendarConfig, 'viewType'> & {
-  viewType?: CalendarView;
-};
+type CalendarView = 'Day' | 'Days' | 'Week' | 'WorkWeek' | 'Resources';
 
 @Component({
   selector: 'app-calendar',
@@ -16,29 +13,29 @@ export class CalendarComponent {
   @Input() events: DayPilot.EventData[] = [];
 
   @Input()
-  set config(value: Partial<CalendarConfig>) {
+  set config(value: Partial<DayPilot.CalendarConfig> & { viewType?: CalendarView }) {
     this._config = { ...this.defaultConfig, ...value };
   }
-  get config(): CalendarConfig {
+  get config(): DayPilot.CalendarConfig {
     return this._config;
   }
 
-  @Output() eventClick = new EventEmitter<DayPilot.CalendarEventClickArgs>();
-  @Output() timeRangeSelected = new EventEmitter<DayPilot.CalendarTimeRangeSelectedArgs>();
+  @Output() eventClick = new EventEmitter<any>();
+  @Output() timeRangeSelected = new EventEmitter<any>();
 
-  private readonly defaultConfig: CalendarConfig = {
+  private readonly defaultConfig: DayPilot.CalendarConfig = {
     viewType: 'Week',
-    onEventClick: (args: DayPilot.CalendarEventClickArgs) => this.onEventClick(args),
-    onTimeRangeSelected: (args: DayPilot.CalendarTimeRangeSelectedArgs) => this.onTimeRangeSelected(args)
+    onEventClick: (args: any) => this.onEventClick(args),
+    onTimeRangeSelected: (args: any) => this.onTimeRangeSelected(args)
   };
 
-  private _config: CalendarConfig = this.defaultConfig;
+  private _config: DayPilot.CalendarConfig = { ...this.defaultConfig };
 
-  onEventClick(args: DayPilot.CalendarEventClickArgs): void {
+  onEventClick(args: any): void {
     this.eventClick.emit(args);
   }
 
-  onTimeRangeSelected(args: DayPilot.CalendarTimeRangeSelectedArgs): void {
+  onTimeRangeSelected(args: any): void {
     this.timeRangeSelected.emit(args);
   }
 }
