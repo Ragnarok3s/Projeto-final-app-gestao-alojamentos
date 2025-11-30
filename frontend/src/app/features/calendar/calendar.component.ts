@@ -8,9 +8,10 @@ import { DayPilot } from '@daypilot/daypilot-lite-angular';
 })
 export class CalendarComponent {
   @Input() events: DayPilot.EventData[] = [];
+
   @Input()
   set config(value: DayPilot.CalendarConfig) {
-    this._config = this.mergeConfig(value);
+    this._config = { ...this.defaultConfig, ...value };
   }
   get config(): DayPilot.CalendarConfig {
     return this._config;
@@ -19,33 +20,19 @@ export class CalendarComponent {
   @Output() eventClick = new EventEmitter<DayPilot.EventClickArgs>();
   @Output() timeRangeSelected = new EventEmitter<DayPilot.TimeRangeSelectedArgs>();
 
-  private readonly baseConfig: DayPilot.CalendarConfig = {
+  private readonly defaultConfig: DayPilot.CalendarConfig = {
     viewType: 'Week',
-    onEventClick: (args) => this.handleEventClick(args),
-    onTimeRangeSelected: (args) => this.handleTimeRangeSelected(args)
+    onEventClick: (args) => this.onEventClick(args),
+    onTimeRangeSelected: (args) => this.onTimeRangeSelected(args)
   };
 
-  private _config: DayPilot.CalendarConfig = this.baseConfig;
+  private _config: DayPilot.CalendarConfig = this.defaultConfig;
 
-  private handleEventClick(args: DayPilot.EventClickArgs): void {
+  onEventClick(args: DayPilot.EventClickArgs): void {
     this.eventClick.emit(args);
   }
 
-  private handleTimeRangeSelected(args: DayPilot.TimeRangeSelectedArgs): void {
+  onTimeRangeSelected(args: DayPilot.TimeRangeSelectedArgs): void {
     this.timeRangeSelected.emit(args);
-  }
-
-  private mergeConfig(customConfig: DayPilot.CalendarConfig): DayPilot.CalendarConfig {
-    const merged = { ...this.baseConfig, ...customConfig };
-
-    if (!merged.onEventClick) {
-      merged.onEventClick = (args) => this.handleEventClick(args);
-    }
-
-    if (!merged.onTimeRangeSelected) {
-      merged.onTimeRangeSelected = (args) => this.handleTimeRangeSelected(args);
-    }
-
-    return merged;
   }
 }
