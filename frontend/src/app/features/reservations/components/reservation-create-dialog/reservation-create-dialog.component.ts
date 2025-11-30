@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { map, Observable } from 'rxjs';
@@ -6,7 +6,7 @@ import { map, Observable } from 'rxjs';
 import { Unit } from '../../../units/models/unit.model';
 import { selectAllUnits } from '../../../units/state/units.selectors';
 import { CreateReservationPayload } from '../../models/reservation.model';
-import { createReservation } from '../../state/reservations.actions';
+import { clearReservationsError, createReservation } from '../../state/reservations.actions';
 import { selectReservationsError } from '../../state/reservations.selectors';
 
 @Component({
@@ -15,7 +15,7 @@ import { selectReservationsError } from '../../state/reservations.selectors';
   styleUrls: ['./reservation-create-dialog.component.scss'],
   standalone: false
 })
-export class ReservationCreateDialogComponent {
+export class ReservationCreateDialogComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
 
   form: FormGroup;
@@ -37,6 +37,10 @@ export class ReservationCreateDialogComponent {
       },
       { validators: this.validateDateRange }
     );
+  }
+
+  ngOnInit(): void {
+    this.store.dispatch(clearReservationsError());
   }
 
   nextStep(): void {
@@ -69,6 +73,7 @@ export class ReservationCreateDialogComponent {
   }
 
   cancel(): void {
+    this.store.dispatch(clearReservationsError());
     this.close.emit();
   }
 
