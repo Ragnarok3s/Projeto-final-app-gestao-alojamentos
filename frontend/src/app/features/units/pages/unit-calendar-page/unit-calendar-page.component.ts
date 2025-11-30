@@ -23,7 +23,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   from!: string;
   to!: string;
   currentDate: Date = new Date();
-  currentView: DayPilot.CalendarViewType = 'Month';
+  currentView: string = 'Week';
 
   reservations$: Observable<Reservation[]> = of([]);
   events: DayPilot.EventData[] = [];
@@ -34,8 +34,8 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   private reservationsSub?: Subscription;
   private currentReservations: Reservation[] = [];
 
-  config: DayPilot.CalendarConfig = {
-    viewType: 'Month',
+  config: any = {
+    viewType: 'Week',
     startDate: DayPilot.Date.today().firstDayOfMonth(),
     headerDateFormat: 'MMMM yyyy',
     theme: 'daypilot-light'
@@ -106,7 +106,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     this.updateCalendarRange(updatedDate, this.currentView);
   }
 
-  setView(view: DayPilot.CalendarViewType): void {
+  setView(view: string): void {
     if (this.currentView === view) {
       return;
     }
@@ -115,7 +115,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     this.updateCalendarRange(this.currentDate, this.currentView);
   }
 
-  onEventClick(event: DayPilot.EventClickArgs): void {
+  onEventClick(event: any): void {
     const reservationId = Number(event.e.id());
     const reservation = this.currentReservations.find((r) => r.id === reservationId);
     if (reservation) {
@@ -123,7 +123,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  onTimeRangeSelected(args: DayPilot.TimeRangeSelectedArgs): void {
+  onTimeRangeSelected(args: any): void {
     const startDate = args.start.toDate();
     this.currentView = 'Week';
     this.updateCalendarRange(startDate, 'Week');
@@ -157,7 +157,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     this.updateVisibleRange(newStart);
   }
 
-  private updateCalendarRange(date: Date, view: DayPilot.CalendarViewType): void {
+  private updateCalendarRange(date: Date, view: string): void {
     const start = view === 'Month' ? new DayPilot.Date(this.getMonthStart(date)) : new DayPilot.Date(this.getWeekStart(date));
 
     this.currentDate = date;
