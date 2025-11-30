@@ -1,6 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
 
+type CalendarConfig = DayPilot.CalendarConfig & {
+  viewType?: DayPilot.CalendarPropsAndEvents['viewType'] | 'Month';
+};
+
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
@@ -11,47 +15,29 @@ export class CalendarComponent {
   @Input() events: DayPilot.EventData[] = [];
 
   @Input()
-  set config(value: Partial<DayPilot.CalendarConfig> | undefined) {
-    this._config = this.mergeConfigWithDefaults(value);
+  set config(value: Partial<CalendarConfig>) {
+    this._config = { ...this.defaultConfig, ...value };
   }
-  get config(): DayPilot.CalendarConfig {
+  get config(): CalendarConfig {
     return this._config;
   }
 
-  @Output() eventClick = new EventEmitter<DayPilot.EventClickArgs>();
-  @Output() timeRangeSelected = new EventEmitter<DayPilot.TimeRangeSelectedArgs>();
+  @Output() eventClick = new EventEmitter<DayPilot.CalendarEventClickArgs>();
+  @Output() timeRangeSelected = new EventEmitter<DayPilot.CalendarTimeRangeSelectedArgs>();
 
-  private readonly defaultConfig: DayPilot.CalendarConfig = {
+  private readonly defaultConfig: CalendarConfig = {
     viewType: 'Week',
-    onEventClick: (args: DayPilot.EventClickArgs) => this.emitEventClick(args),
-    onTimeRangeSelected: (args: DayPilot.TimeRangeSelectedArgs) => this.emitTimeRangeSelected(args)
+    onEventClick: (args: DayPilot.CalendarEventClickArgs) => this.onEventClick(args),
+    onTimeRangeSelected: (args: DayPilot.CalendarTimeRangeSelectedArgs) => this.onTimeRangeSelected(args)
   };
 
-  private _config: DayPilot.CalendarConfig = this.defaultConfig;
+  private _config: CalendarConfig = this.defaultConfig;
 
-  private mergeConfigWithDefaults(config: Partial<DayPilot.CalendarConfig> | undefined): DayPilot.CalendarConfig {
-    const safeConfig = config ?? {};
-    const { onEventClick, onTimeRangeSelected, ...restConfig } = safeConfig;
-
-    return {
-      ...this.defaultConfig,
-      ...restConfig,
-      onEventClick: (args: DayPilot.EventClickArgs) => {
-        this.emitEventClick(args);
-        onEventClick?.(args);
-      },
-      onTimeRangeSelected: (args: DayPilot.TimeRangeSelectedArgs) => {
-        this.emitTimeRangeSelected(args);
-        onTimeRangeSelected?.(args);
-      }
-    };
-  }
-
-  private emitEventClick(args: DayPilot.EventClickArgs): void {
+  onEventClick(args: DayPilot.CalendarEventClickArgs): void {
     this.eventClick.emit(args);
   }
 
-  private emitTimeRangeSelected(args: DayPilot.TimeRangeSelectedArgs): void {
+  onTimeRangeSelected(args: DayPilot.CalendarTimeRangeSelectedArgs): void {
     this.timeRangeSelected.emit(args);
   }
 }
