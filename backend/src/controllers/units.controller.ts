@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { listUnits, createUnit, updateUnit } from '../services/units.service';
+import { listUnits, createUnit, updateUnit, deleteUnit as deleteUnitService } from '../services/units.service';
+import { HttpError } from '../utils/httpError';
 
 export async function getUnits(_req: Request, res: Response, next: NextFunction) {
   try {
@@ -30,6 +31,22 @@ export async function putUnit(req: Request, res: Response, next: NextFunction) {
     }
     const unit = await updateUnit(unitId, { name, isActive, capacity });
     return res.json(unit);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function deleteUnit(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+    const unitId = Number(id);
+
+    if (Number.isNaN(unitId)) {
+      throw new HttpError(400, 'ID inválido');
+    }
+
+    await deleteUnitService(unitId);
+    return res.status(204).send();
   } catch (error) {
     return next(error);
   }

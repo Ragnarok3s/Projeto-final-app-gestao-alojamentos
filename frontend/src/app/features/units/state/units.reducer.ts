@@ -11,7 +11,10 @@ import {
   loadUnitsSuccess,
   updateUnit,
   updateUnitFailure,
-  updateUnitSuccess
+  updateUnitSuccess,
+  deleteUnit,
+  deleteUnitFailure,
+  deleteUnitSuccess
 } from './units.actions';
 
 export interface UnitsState extends EntityState<Unit> {
@@ -38,7 +41,10 @@ export const unitsReducer = createReducer(
   on(createUnitFailure, (state, { error }) => ({ ...state, loading: false, error })),
   on(updateUnit, (state) => ({ ...state, loading: true, error: null })),
   on(updateUnitSuccess, (state, { unit }) => unitsAdapter.upsertOne(unit, { ...state, loading: false, error: null })),
-  on(updateUnitFailure, (state, { error }) => ({ ...state, loading: false, error }))
+  on(updateUnitFailure, (state, { error }) => ({ ...state, loading: false, error })),
+  on(deleteUnit, (state) => ({ ...state, loading: true, error: null })),
+  on(deleteUnitSuccess, (state, { id }) => unitsAdapter.removeOne(id, { ...state, loading: false, error: null })),
+  on(deleteUnitFailure, (state, { error }) => ({ ...state, loading: false, error }))
 );
 
 export const { selectAll, selectEntities } = unitsAdapter.getSelectors();

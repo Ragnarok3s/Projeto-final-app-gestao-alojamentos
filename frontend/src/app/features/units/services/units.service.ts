@@ -35,4 +35,10 @@ export class UnitsService {
       headers: this.getAuthHeaders()
     });
   }
+
+  deleteUnit(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 }

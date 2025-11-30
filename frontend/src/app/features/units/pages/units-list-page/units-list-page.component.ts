@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { Unit, UnitPayload } from '../../models/unit.model';
-import { createUnit, loadUnits, updateUnit } from '../../state/units.actions';
+import { createUnit, deleteUnit, loadUnits, updateUnit } from '../../state/units.actions';
 import { selectAllUnits, selectUnitsError, selectUnitsLoading } from '../../state/units.selectors';
 
 @Component({
@@ -68,6 +68,20 @@ export class UnitsListPageComponent implements OnInit {
 
   viewCalendar(unit: Unit): void {
     this.router.navigate(['/app/units', unit.id, 'calendar']);
+  }
+
+  confirmDelete(unit: Unit): void {
+    const confirmed = window.confirm(`Eliminar a unidade "${unit.name}"?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.store.dispatch(deleteUnit({ id: unit.id }));
+
+    if (this.editingUnitId === unit.id) {
+      this.resetForm();
+    }
   }
 
   get nameControl() {
