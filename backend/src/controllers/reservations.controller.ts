@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import {
-  listReservations,
+  listReservations as listUnitReservations,
   createReservation,
   updateReservation,
   cancelReservation,
@@ -35,7 +35,7 @@ export async function getReservations(req: Request, res: Response, next: NextFun
     }
 
     const { from, to } = req.query as { from?: string; to?: string };
-    const reservations = await listReservations(unitId, from, to);
+    const reservations = await listUnitReservations(unitId, from, to);
     return res.json(reservations.map(toApiReservation));
   } catch (error) {
     return next(error);
@@ -139,6 +139,64 @@ export async function getOverviewReservations(req: Request, res: Response, next:
       include: {
         unit: true,
       },
+    });
+
+    res.json(reservations);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function listReservations(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { from, to, unitId, status, channel, q } = req.query as {
+      from?: string;
+      to?: string;
+      unitId?: string;
+      status?: string;
+      channel?: string;
+      q?: string;
+    };
+
+    const where: any = {};
+
+    if (from) {
+      where.startDate = { ...(where.startDate || {}), gte: new Date(from) };
+    }
+
+    if (to) {
+      where.startDate = { ...(where.startDate || {}), lt: new Date(to) };
+    }
+
+    if (unitId) {
+      where.unitId = Number(unitId);
+    }
+
+    if (status && status !== 'ALL') {
+      where.status = status;
+    }
+
+    if (channel) {
+      where.channel = channel;
+    }
+
+    if (q && q.trim()) {
+      const query = q.trim();
+      where.OR = [
+        { guestName: { contains: query, mode: 'insensitive' } },
+        { unit: { name: { contains: query, mode: 'insensitive' } } },
+      ];
+    }
+
+    const reservations = await prisma.reservation.findMany({
+      where,
+      include: {
+        unit: true,
+      },
+      orderBy: {
+        startDate: 'asc',
+      },
+      take: 500,
     });
 
     res.json(reservations);

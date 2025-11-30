@@ -2,10 +2,26 @@ import { createAction, props } from '@ngrx/store';
 
 import { Reservation } from '../models/reservation.model';
 import { CreateReservationPayload } from '../models/reservation.model';
+import { ReservationsListFilters } from '../services/reservations.service';
 
 export const loadReservations = createAction(
   '[Reservations] Load Reservations',
   props<{ unitId: number; from?: string; to?: string }>()
+);
+
+export const loadReservationsList = createAction(
+  '[Reservations] Load Reservations List',
+  props<{ filters: ReservationsListFilters }>()
+);
+
+export const loadReservationsListSuccess = createAction(
+  '[Reservations] Load Reservations List Success',
+  props<{ reservations: Reservation[] }>()
+);
+
+export const loadReservationsListFailure = createAction(
+  '[Reservations] Load Reservations List Failure',
+  props<{ error: any }>()
 );
 
 export const loadReservationsSuccess = createAction(

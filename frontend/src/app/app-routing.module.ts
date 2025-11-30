@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AppLayoutComponent } from './layout/app-layout.component';
 import { AuthGuard } from './core/guards/auth.guard';
+import { ReservationsListPageComponent } from './features/reservations/pages/reservations-list-page/reservations-list-page.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -22,6 +23,11 @@ const routes: Routes = [
       {
         path: 'calendar-geral',
         loadChildren: () => import('./features/calendar/calendar.module').then((m) => m.CalendarModule)
+      },
+      {
+        path: 'reservas',
+        component: ReservationsListPageComponent,
+        canActivate: [AuthGuard]
       }
     ]
   },
