@@ -1,9 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { CreateReservationPayload, Reservation } from '../models/reservation.model';
+
+type ApiReservation = Reservation & { checkIn?: string; checkOut?: string };
 
 @Injectable({ providedIn: 'root' })
 export class ReservationsService {
@@ -20,15 +22,21 @@ export class ReservationsService {
       params = params.set('to', to);
     }
 
-    return this.http.get<Reservation[]>(`${this.baseUrl}/units/${unitId}/reservations`, { params });
+    return this.http
+      .get<ApiReservation[]>(`${this.baseUrl}/units/${unitId}/reservations`, { params })
+      .pipe(map((reservations) => reservations.map((reservation) => this.normalizeReservation(reservation))));
   }
 
   updateReservation(id: number, payload: Partial<Reservation>): Observable<Reservation> {
-    return this.http.put<Reservation>(`${this.baseUrl}/reservations/${id}`, payload);
+    return this.http
+      .put<ApiReservation>(`${this.baseUrl}/reservations/${id}`, payload)
+      .pipe(map((reservation) => this.normalizeReservation(reservation)));
   }
 
   cancelReservation(id: number): Observable<Reservation> {
-    return this.http.patch<Reservation>(`${this.baseUrl}/reservations/${id}/cancel`, {});
+    return this.http
+      .patch<ApiReservation>(`${this.baseUrl}/reservations/${id}/cancel`, {})
+      .pipe(map((reservation) => this.normalizeReservation(reservation)));
   }
 
   createReservation(unitId: number, payload: CreateReservationPayload): Observable<Reservation> {
@@ -41,6 +49,21 @@ export class ReservationsService {
       status: payload.status
     };
 
-    return this.http.post<Reservation>(`${this.baseUrl}/units/${unitId}/reservations`, body);
+    return this.http
+      .post<ApiReservation>(`${this.baseUrl}/units/${unitId}/reservations`, body)
+      .pipe(map((reservation) => this.normalizeReservation(reservation)));
+  }
+
+  private normalizeReservation(reservation: ApiReservation): Reservation {
+    const { checkIn, checkOut, ...rest } = reservation;
+
+    const startDate = reservation.startDate ?? checkIn;
+    const endDate = reservation.endDate ?? checkOut;
+
+    return {
+      ...rest,
+      startDate: startDate ?? '',
+      endDate: endDate ?? ''
+    };
   }
 }
