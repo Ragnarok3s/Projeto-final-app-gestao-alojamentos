@@ -12,8 +12,7 @@ import {
   selectReservationsLoading
 } from '../../../reservations/state/reservations.selectors';
 
-type CalendarView = DayPilot.CalendarPropsAndEvents['viewType'] | 'Month';
-type CalendarConfig = Omit<DayPilot.CalendarConfig, 'viewType'> & { viewType?: CalendarView };
+type CalendarView = 'Day' | 'Days' | 'Week' | 'WorkWeek' | 'Resources';
 
 @Component({
   selector: 'app-unit-calendar-page',
@@ -37,7 +36,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   private reservationsSub?: Subscription;
   private currentReservations: Reservation[] = [];
 
-  config: CalendarConfig = {
+  config: DayPilot.CalendarConfig = {
     viewType: 'Week',
     startDate: DayPilot.Date.today().firstDayOfMonth(),
     headerDateFormat: 'MMMM yyyy',
@@ -87,24 +86,14 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
 
   goToPrevious(): void {
     const updatedDate = new Date(this.currentDate);
-    if (this.currentView === 'Month') {
-      updatedDate.setDate(1);
-      updatedDate.setMonth(updatedDate.getMonth() - 1);
-    } else {
-      updatedDate.setDate(updatedDate.getDate() - 7);
-    }
+    updatedDate.setDate(updatedDate.getDate() - this.getNavigationOffset());
 
     this.updateCalendarRange(updatedDate, this.currentView);
   }
 
   goToNext(): void {
     const updatedDate = new Date(this.currentDate);
-    if (this.currentView === 'Month') {
-      updatedDate.setDate(1);
-      updatedDate.setMonth(updatedDate.getMonth() + 1);
-    } else {
-      updatedDate.setDate(updatedDate.getDate() + 7);
-    }
+    updatedDate.setDate(updatedDate.getDate() + this.getNavigationOffset());
 
     this.updateCalendarRange(updatedDate, this.currentView);
   }
@@ -118,7 +107,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     this.updateCalendarRange(this.currentDate, this.currentView);
   }
 
-  onEventClick(event: DayPilot.CalendarEventClickArgs): void {
+  onEventClick(event: any): void {
     const reservationId = Number(event.e.id());
     const reservation = this.currentReservations.find((r) => r.id === reservationId);
     if (reservation) {
@@ -126,7 +115,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  onTimeRangeSelected(args: DayPilot.CalendarTimeRangeSelectedArgs): void {
+  onTimeRangeSelected(args: any): void {
     const startDate = args.start.toDate();
     this.currentView = 'Week';
     this.updateCalendarRange(startDate, 'Week');
@@ -161,7 +150,10 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   }
 
   private updateCalendarRange(date: Date, view: CalendarView): void {
-    const start = view === 'Month' ? new DayPilot.Date(this.getMonthStart(date)) : new DayPilot.Date(this.getWeekStart(date));
+    const start =
+      view === 'Week' || view === 'WorkWeek' || view === 'Resources'
+        ? new DayPilot.Date(this.getWeekStart(date))
+        : new DayPilot.Date(date);
 
     this.currentDate = date;
     this.currentView = view;
@@ -170,10 +162,20 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   }
 
   private updateVisibleRange(start: DayPilot.Date): { from: string; to: string } {
-    const viewType = this.config.viewType || 'Month';
+    const viewType: CalendarView = (this.config.viewType as CalendarView) || 'Week';
     const firstDay =
-      viewType === 'Week' ? new DayPilot.Date(this.getWeekStart(start.toDate())) : start.firstDayOfMonth();
-    const lastDay = viewType === 'Week' ? firstDay.addDays(6) : firstDay.addMonths(1).addDays(-1);
+      viewType === 'Week' || viewType === 'WorkWeek' || viewType === 'Resources'
+        ? new DayPilot.Date(this.getWeekStart(start.toDate()))
+        : start;
+    const daysInView =
+      viewType === 'Day'
+        ? 0
+        : viewType === 'WorkWeek'
+          ? 4
+          : viewType === 'Days'
+            ? Math.max((this.config.days || 1) - 1, 0)
+            : 6;
+    const lastDay = firstDay.addDays(daysInView);
 
     this.from = firstDay.toString('yyyy-MM-dd');
     this.to = lastDay.toString('yyyy-MM-dd');
@@ -194,15 +196,23 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     }));
   }
 
-  private getMonthStart(date: Date): Date {
-    return new Date(date.getFullYear(), date.getMonth(), 1);
-  }
-
   private getWeekStart(date: Date): Date {
     const weekStart = new Date(date);
     const day = weekStart.getDay();
     const diff = (day + 6) % 7; // start week on Monday
     weekStart.setDate(weekStart.getDate() - diff);
     return weekStart;
+  }
+
+  private getNavigationOffset(): number {
+    if (this.currentView === 'Day') {
+      return 1;
+    }
+
+    if (this.currentView === 'Days') {
+      return Math.max(this.config.days || 1, 1);
+    }
+
+    return 7;
   }
 }
