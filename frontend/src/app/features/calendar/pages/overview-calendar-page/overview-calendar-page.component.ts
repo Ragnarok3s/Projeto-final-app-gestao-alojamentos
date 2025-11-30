@@ -1,49 +1,118 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { DayPilot, DayPilotModule } from '@daypilot/daypilot-lite-angular';
 
 import { ReservationsService } from '../../../reservations/services/reservations.service';
 import { Reservation } from '../../../reservations/models/reservation.model';
+import { Unit } from '../../../units/models/unit.model';
+
+interface CalendarEventView {
+  reservationId: number;
+  unitId: number;
+  unitName: string;
+  guestName: string;
+  nights: number;
+  guests: number;
+  channel: string;
+  channelLabel: string;
+  totalFormatted: string;
+  color: string;
+  gridStart: number;
+  gridEnd: number;
+}
+
+interface CalendarRow {
+  unit: Unit;
+  events: CalendarEventView[];
+}
 
 @Component({
   selector: 'app-overview-calendar-page',
   templateUrl: './overview-calendar-page.component.html',
   styleUrls: ['./overview-calendar-page.component.scss'],
   standalone: true,
-  imports: [CommonModule, DayPilotModule]
+  imports: [CommonModule]
 })
 export class OverviewCalendarPageComponent implements OnInit {
-  viewDate = DayPilot.Date.today().firstDayOfMonth();
-  events: DayPilot.EventData[] = [];
+  viewStart!: Date;
+  viewEnd!: Date;
+  days: Date[] = [];
 
-  calendarConfig: DayPilot.CalendarConfig = {
-    viewType: 'Days',
-    headerDateFormat: 'd',
-    startDate: this.viewDate.firstDayOfMonth(),
-    days: this.viewDate.daysInMonth()
-  };
+  rows: CalendarRow[] = [];
 
   constructor(private readonly reservationsService: ReservationsService) {}
 
   ngOnInit(): void {
-    this.loadReservationsForCurrentMonth();
+    this.setMonth(new Date());
   }
 
-  private loadReservationsForCurrentMonth(): void {
-    const from = this.viewDate.firstDayOfMonth().toString('yyyy-MM-dd');
-    const to = this.viewDate.addMonths(1).firstDayOfMonth().toString('yyyy-MM-dd');
+  previousMonth(): void {
+    const previous = new Date(this.viewStart);
+    previous.setMonth(previous.getMonth() - 1);
+    this.setMonth(previous);
+  }
+
+  nextMonth(): void {
+    const next = new Date(this.viewStart);
+    next.setMonth(next.getMonth() + 1);
+    this.setMonth(next);
+  }
+
+  private setMonth(base: Date): void {
+    this.viewStart = new Date(base.getFullYear(), base.getMonth(), 1);
+    this.viewEnd = new Date(base.getFullYear(), base.getMonth() + 1, 1);
+    this.buildDays();
+    this.loadReservations();
+  }
+
+  private buildDays(): void {
+    this.days = [];
+    const current = new Date(this.viewStart);
+    while (current < this.viewEnd) {
+      this.days.push(new Date(current));
+      current.setDate(current.getDate() + 1);
+    }
+  }
+
+  private loadReservations(): void {
+    const from = this.formatDate(this.viewStart);
+    const to = this.formatDate(this.viewEnd);
 
     this.reservationsService.getOverviewReservations(from, to).subscribe((reservations) => {
-      this.events = reservations.map((reservation) => this.mapReservationToEvent(reservation));
+      this.rows = this.buildRows(reservations);
     });
   }
 
-  private mapReservationToEvent(reservation: Reservation): DayPilot.EventData {
-    const start = new DayPilot.Date(reservation.startDate as any);
-    const end = new DayPilot.Date(reservation.endDate as any);
-    const startDate = new Date(reservation.startDate as any);
-    const endDate = new Date(reservation.endDate as any);
-    const nights = Math.max(0, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
+  private buildRows(reservations: Reservation[]): CalendarRow[] {
+    const unitsMap = new Map<number, Unit>();
+    for (const reservation of reservations) {
+      if (reservation.unit) {
+        unitsMap.set(reservation.unit.id, reservation.unit as Unit);
+      }
+    }
+
+    const units = Array.from(unitsMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+
+    return units.map((unit) => {
+      const unitReservations = reservations.filter((reservation) => reservation.unitId === unit.id);
+      const events = unitReservations.map((reservation) => this.mapReservationToEvent(reservation));
+      return { unit, events };
+    });
+  }
+
+  private mapReservationToEvent(reservation: Reservation): CalendarEventView {
+    const start = new Date(reservation.startDate as any);
+    const end = new Date(reservation.endDate as any);
+
+    const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+
+    const msPerDay = 1000 * 60 * 60 * 24;
+
+    const nightsRaw = Math.max(1, Math.round((endDay.getTime() - startDay.getTime()) / msPerDay));
+    const startOffset = Math.max(0, Math.floor((startDay.getTime() - this.viewStart.getTime()) / msPerDay));
+
+    const gridStart = startOffset + 1;
+    const gridEnd = Math.min(this.days.length + 1, gridStart + nightsRaw);
 
     const guests = reservation.guestsCount ?? 0;
     const channel = (reservation.channel || 'direct').toLowerCase();
@@ -53,19 +122,24 @@ export class OverviewCalendarPageComponent implements OnInit {
     const channelLabel = this.getChannelLabel(channel);
     const color = this.getChannelColor(channel);
 
-    const textLines = [
-      unitName,
-      `${reservation.guestName || 'Hóspede'} • ${nights} noite${nights !== 1 ? 's' : ''} • ${guests} pax`,
-      `${channelLabel} • ${(total / 100).toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' })}`
-    ];
+    const totalFormatted = (total / 100).toLocaleString('pt-PT', {
+      style: 'currency',
+      currency: 'EUR'
+    });
 
     return {
-      id: reservation.id,
-      start,
-      end,
-      text: textLines.join('\n'),
-      backColor: color,
-      borderColor: color
+      reservationId: reservation.id,
+      unitId: reservation.unitId,
+      unitName,
+      guestName: reservation.guestName || 'Hóspede',
+      nights: nightsRaw,
+      guests,
+      channel,
+      channelLabel,
+      totalFormatted,
+      color,
+      gridStart,
+      gridEnd
     };
   }
 
@@ -98,23 +172,10 @@ export class OverviewCalendarPageComponent implements OnInit {
     }
   }
 
-  goToPreviousMonth(): void {
-    this.viewDate = this.viewDate.addMonths(-1);
-    this.calendarConfig = {
-      ...this.calendarConfig,
-      startDate: this.viewDate.firstDayOfMonth(),
-      days: this.viewDate.daysInMonth()
-    };
-    this.loadReservationsForCurrentMonth();
-  }
-
-  goToNextMonth(): void {
-    this.viewDate = this.viewDate.addMonths(1);
-    this.calendarConfig = {
-      ...this.calendarConfig,
-      startDate: this.viewDate.firstDayOfMonth(),
-      days: this.viewDate.daysInMonth()
-    };
-    this.loadReservationsForCurrentMonth();
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

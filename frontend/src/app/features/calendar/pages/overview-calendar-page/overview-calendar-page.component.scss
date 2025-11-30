@@ -1,28 +1,82 @@
-.page-header {
+.overview-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
 
-  h1 {
-    margin: 0;
-  }
-
-  .actions {
+  .month-nav {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-
-    button {
-      padding: 0.4rem 0.8rem;
-      cursor: pointer;
-    }
   }
 }
 
-.calendar-wrapper {
+.overview-grid {
   border: 1px solid #e0e0e0;
   border-radius: 4px;
+  overflow-x: auto;
+  background: #fafafa;
+}
+
+.grid-header {
+  display: grid;
+  grid-template-columns: 200px repeat(auto-fit, minmax(40px, 1fr));
+  font-weight: 600;
+  font-size: 0.8rem;
+  background: #f5f5f5;
+}
+
+.unit-col-header {
   padding: 0.5rem;
-  background: #fff;
+  border-right: 1px solid #e0e0e0;
+}
+
+.day-col {
+  padding: 0.5rem 0.25rem;
+  text-align: center;
+  border-left: 1px solid #eee;
+}
+
+.grid-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: 48px;
+  border-top: 1px solid #eee;
+}
+
+.unit-col {
+  padding: 0.5rem;
+  border-right: 1px solid #e0e0e0;
+
+  .unit-name {
+    font-weight: 500;
+  }
+}
+
+.row-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+  min-height: 48px;
+}
+
+.day-cell {
+  border-left: 1px solid #f0f0f0;
+}
+
+.event {
+  position: relative;
+  margin: 2px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  .event-line-1 {
+    font-weight: 600;
+  }
 }

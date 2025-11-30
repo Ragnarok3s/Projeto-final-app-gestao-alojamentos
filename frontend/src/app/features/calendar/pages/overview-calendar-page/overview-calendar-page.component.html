@@ -1,13 +1,41 @@
-<div class="page-header">
+<div class="overview-header">
   <h1>Calendário geral</h1>
-
-  <div class="actions">
-    <button type="button" (click)="goToPreviousMonth()">Mês anterior</button>
-    <span>{{ viewDate.toString('MMMM yyyy') }}</span>
-    <button type="button" (click)="goToNextMonth()">Próximo mês</button>
+  <div class="month-nav">
+    <button type="button" (click)="previousMonth()">Mês anterior</button>
+    <span>{{ viewStart | date: 'MMMM yyyy' }}</span>
+    <button type="button" (click)="nextMonth()">Próximo mês</button>
   </div>
 </div>
 
-<div class="calendar-wrapper">
-  <daypilot-calendar [config]="calendarConfig" [events]="events"></daypilot-calendar>
+<div class="overview-grid" *ngIf="days.length">
+  <div class="grid-header">
+    <div class="unit-col-header">Unidade</div>
+    <div class="day-col" *ngFor="let day of days">{{ day | date: 'd' }}</div>
+  </div>
+
+  <div class="grid-row" *ngFor="let row of rows">
+    <div class="unit-col">
+      <div class="unit-name">{{ row.unit.name }}</div>
+    </div>
+
+    <div class="row-grid">
+      <div class="day-cell" *ngFor="let day of days"></div>
+
+      <div
+        class="event"
+        *ngFor="let ev of row.events"
+        [style.grid-column-start]="ev.gridStart"
+        [style.grid-column-end]="ev.gridEnd"
+        [style.backgroundColor]="ev.color"
+      >
+        <div class="event-line-1">{{ ev.unitName }}</div>
+        <div class="event-line-2">
+          {{ ev.guestName }} • {{ ev.nights }} noite{{ ev.nights !== 1 ? 's' : '' }} • {{ ev.guests }} pax
+        </div>
+        <div class="event-line-3">
+          {{ ev.channelLabel }} • {{ ev.totalFormatted }}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
