@@ -1,0 +1,100 @@
+<div class="page-header">
+  <h1>Reservas</h1>
+</div>
+
+<form class="filters" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+  <div class="filters-row">
+    <label>
+      De
+      <input type="date" formControlName="from" />
+    </label>
+
+    <label>
+      Até
+      <input type="date" formControlName="to" />
+    </label>
+
+    <label>
+      Unidade
+      <select formControlName="unitId">
+        <option value="">Todas</option>
+        <option *ngFor="let u of (units$ | async)" [value]="u.id">
+          {{ u.name }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Canal
+      <select formControlName="channel">
+        <option value="">Todos</option>
+        <option value="direct">Directo</option>
+        <option value="booking">Booking.com</option>
+        <option value="airbnb">Airbnb</option>
+        <option value="expedia">Expedia</option>
+      </select>
+    </label>
+
+    <label>
+      Estado
+      <select formControlName="status">
+        <option value="ALL">Todos</option>
+        <option value="CONFIRMED">Confirmadas</option>
+        <option value="CANCELLED">Canceladas</option>
+      </select>
+    </label>
+
+    <label class="q-field">
+      Pesquisa
+      <input type="text" formControlName="q" placeholder="Nome hóspede ou unidade" />
+    </label>
+
+    <button type="submit">Aplicar</button>
+    <button type="button" (click)="clearFilters()">Limpar</button>
+  </div>
+</form>
+
+<div class="table-wrapper" *ngIf="!(loading$ | async); else loadingTpl">
+  <table class="reservations-table">
+    <thead>
+      <tr>
+        <th>Unidade</th>
+        <th>Check-in</th>
+        <th>Check-out</th>
+        <th>Noites</th>
+        <th>Hóspede</th>
+        <th>Pessoas</th>
+        <th>Canal</th>
+        <th>Valor</th>
+        <th>Estado</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let r of (reservations$ | async)">
+        <td>{{ r.unit?.name || ('Unidade ' + r.unitId) }}</td>
+        <td>{{ r.startDate | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ r.endDate | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ getNights(r) }}</td>
+        <td>{{ r.guestName }}</td>
+        <td>{{ r.guestsCount || 0 }}</td>
+        <td>{{ r.channel || 'Directo' }}</td>
+        <td>{{ (r.totalPrice || 0) / 100 | currency: 'EUR' }}</td>
+        <td>{{ r.status }}</td>
+        <td>
+          <button type="button" (click)="viewReservation(r)">Ver</button>
+          <button type="button" (click)="cancelReservation(r)" [disabled]="r.status === 'CANCELLED'">
+            Cancelar
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="(reservations$ | async)?.length === 0">
+        <td colspan="10">Nenhuma reserva encontrada para os filtros seleccionados.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading">A carregar reservas...</div>
+</ng-template>

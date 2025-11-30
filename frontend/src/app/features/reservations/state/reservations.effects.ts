@@ -14,6 +14,9 @@ import {
   loadReservations,
   loadReservationsFailure,
   loadReservationsSuccess,
+  loadReservationsList,
+  loadReservationsListFailure,
+  loadReservationsListSuccess,
   updateReservation,
   updateReservationFailure,
   updateReservationSuccess
@@ -29,6 +32,18 @@ export class ReservationsEffects {
         this.reservationsService.getReservations(unitId, from, to).pipe(
           map((reservations) => loadReservationsSuccess({ reservations })),
           catchError(() => of(loadReservationsFailure({ error: 'Falha ao carregar reservas.' })))
+        )
+      )
+    )
+  );
+
+  loadReservationsList$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadReservationsList),
+      mergeMap(({ filters }) =>
+        this.reservationsService.getReservationsList(filters).pipe(
+          map((reservations) => loadReservationsListSuccess({ reservations })),
+          catchError((error) => of(loadReservationsListFailure({ error })))
         )
       )
     )

@@ -7,6 +7,15 @@ import { CreateReservationPayload, Reservation } from '../models/reservation.mod
 
 type ApiReservation = Reservation & { checkIn?: string; checkOut?: string };
 
+export interface ReservationsListFilters {
+  from?: string;
+  to?: string;
+  unitId?: number;
+  status?: 'CONFIRMED' | 'CANCELLED' | 'ALL';
+  channel?: string;
+  q?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ReservationsService {
   private readonly baseUrl = environment.apiUrl;
@@ -31,6 +40,21 @@ export class ReservationsService {
 
     return this.http
       .get<ApiReservation[]>(`${this.baseUrl}/units/${unitId}/reservations`, { params })
+      .pipe(map((reservations) => reservations.map((reservation) => this.normalizeReservation(reservation))));
+  }
+
+  getReservationsList(filters: ReservationsListFilters): Observable<Reservation[]> {
+    const params: any = {};
+
+    if (filters.from) params.from = filters.from;
+    if (filters.to) params.to = filters.to;
+    if (filters.unitId) params.unitId = filters.unitId;
+    if (filters.status && filters.status !== 'ALL') params.status = filters.status;
+    if (filters.channel) params.channel = filters.channel;
+    if (filters.q && filters.q.trim()) params.q = filters.q.trim();
+
+    return this.http
+      .get<Reservation[]>(`${this.baseUrl}/reservations`, { params })
       .pipe(map((reservations) => reservations.map((reservation) => this.normalizeReservation(reservation))));
   }
 
