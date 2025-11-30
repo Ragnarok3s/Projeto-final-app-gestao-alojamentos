@@ -45,7 +45,7 @@ export async function postReservation(req: Request, res: Response, next: NextFun
       return res.status(400).json({ message: 'ID da unidade inválido' });
     }
 
-    const { checkIn, checkOut, startDate, endDate, guestName, guestContact, notes } = req.body;
+    const { checkIn, checkOut, startDate, endDate, guestName, guestContact, notes, status } = req.body;
 
     const arrivalDate = checkIn ?? startDate;
     const departureDate = checkOut ?? endDate;
@@ -62,6 +62,7 @@ export async function postReservation(req: Request, res: Response, next: NextFun
       guestName,
       guestContact,
       notes,
+      status,
     });
     return res.status(201).json(toApiReservation(reservation));
   } catch (error) {

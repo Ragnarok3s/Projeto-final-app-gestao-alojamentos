@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import { Reservation } from '../models/reservation.model';
+import { CreateReservationPayload, Reservation } from '../models/reservation.model';
 
 @Injectable({ providedIn: 'root' })
 export class ReservationsService {
@@ -29,5 +29,18 @@ export class ReservationsService {
 
   cancelReservation(id: number): Observable<Reservation> {
     return this.http.patch<Reservation>(`${this.baseUrl}/reservations/${id}/cancel`, {});
+  }
+
+  createReservation(unitId: number, payload: CreateReservationPayload): Observable<Reservation> {
+    const body = {
+      checkIn: payload.startDate,
+      checkOut: payload.endDate,
+      guestName: payload.guestName,
+      guestContact: payload.guestContact,
+      notes: payload.notes,
+      status: payload.status
+    };
+
+    return this.http.post<Reservation>(`${this.baseUrl}/units/${unitId}/reservations`, body);
   }
 }

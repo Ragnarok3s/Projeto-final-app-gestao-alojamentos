@@ -1,5 +1,12 @@
 <section class="units-page">
-  <h2>Unidades</h2>
+  <div class="units-header">
+    <div>
+      <h2>Unidades</h2>
+    </div>
+    <div class="units-header__actions">
+      <button class="btn btn-primary" type="button" (click)="openCreateReservationDialog()">Nova reserva</button>
+    </div>
+  </div>
 
   <div class="form-card">
     <h3>{{ editingUnitId ? 'Editar unidade' : 'Nova unidade' }}</h3>
@@ -58,4 +65,6 @@
       </tr>
     </tbody>
   </table>
+
+  <app-reservation-create-dialog *ngIf="showCreateReservationDialog" (close)="closeCreateReservationDialog()"></app-reservation-create-dialog>
 </section>

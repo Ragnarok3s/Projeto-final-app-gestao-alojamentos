@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, mergeMap, of } from 'rxjs';
+import { catchError, map, mergeMap, of, tap } from 'rxjs';
 
 import { ReservationsService } from '../services/reservations.service';
 import {
   cancelReservation,
   cancelReservationFailure,
   cancelReservationSuccess,
+  createReservation,
+  createReservationFailure,
+  createReservationSuccess,
   loadReservations,
   loadReservationsFailure,
   loadReservationsSuccess,
@@ -15,6 +18,7 @@ import {
   updateReservationFailure,
   updateReservationSuccess
 } from './reservations.actions';
+import { ReservationDialogService } from '../services/reservation-dialog.service';
 
 @Injectable()
 export class ReservationsEffects {
@@ -54,7 +58,32 @@ export class ReservationsEffects {
     )
   );
 
-  constructor(private readonly actions$: Actions, private readonly reservationsService: ReservationsService) {}
+  createReservation$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(createReservation),
+      mergeMap(({ reservation }) =>
+        this.reservationsService.createReservation(reservation.unitId, reservation).pipe(
+          map((created) => createReservationSuccess({ reservation: created })),
+          catchError((error: HttpErrorResponse) => of(createReservationFailure({ error: this.resolveSaveError(error) })))
+        )
+      )
+    )
+  );
+
+  closeDialogOnCreateSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(createReservationSuccess),
+        tap(() => this.dialogService.requestCloseCreateDialog())
+      ),
+    { dispatch: false }
+  );
+
+  constructor(
+    private readonly actions$: Actions,
+    private readonly reservationsService: ReservationsService,
+    private readonly dialogService: ReservationDialogService
+  ) {}
 
   private resolveSaveError(error: HttpErrorResponse): string {
     if (error.status === 409) {
