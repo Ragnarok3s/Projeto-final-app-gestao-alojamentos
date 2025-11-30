@@ -1,4 +1,4 @@
-@import '../reservation-detail-dialog/reservation-detail-dialog.component.scss';
+@use '../reservation-detail-dialog/reservation-detail-dialog.component' as *;
 
 .dialog-body {
   display: flex;
