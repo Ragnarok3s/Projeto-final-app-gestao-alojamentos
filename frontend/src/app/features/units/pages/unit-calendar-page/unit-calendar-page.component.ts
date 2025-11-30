@@ -152,11 +152,13 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   }
 
   private mapReservationsToEvents(reservations: Reservation[]): DayPilot.EventData[] {
-    return reservations.map((reservation) => ({
-      id: reservation.id,
-      text: reservation.guestName || 'Reserva',
-      start: reservation.startDate,
-      end: reservation.endDate
-    }));
+    return reservations
+      .filter((reservation) => reservation.status !== 'CANCELLED')
+      .map((reservation) => ({
+        id: reservation.id,
+        text: reservation.guestName || 'Reserva',
+        start: reservation.startDate,
+        end: reservation.endDate
+      }));
   }
 }
