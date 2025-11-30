@@ -13,7 +13,7 @@ import {
 } from '../../../reservations/state/reservations.selectors';
 
 type CalendarView = DayPilot.CalendarPropsAndEvents['viewType'] | 'Month';
-type CalendarConfig = DayPilot.CalendarConfig & { viewType?: CalendarView };
+type CalendarConfig = Omit<DayPilot.CalendarConfig, 'viewType'> & { viewType?: CalendarView };
 
 @Component({
   selector: 'app-unit-calendar-page',

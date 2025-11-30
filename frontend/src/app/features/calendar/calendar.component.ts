@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
 
-type CalendarConfig = DayPilot.CalendarConfig & {
-  viewType?: DayPilot.CalendarPropsAndEvents['viewType'] | 'Month';
+type CalendarView = DayPilot.CalendarPropsAndEvents['viewType'] | 'Month';
+type CalendarConfig = Omit<DayPilot.CalendarConfig, 'viewType'> & {
+  viewType?: CalendarView;
 };
 
 @Component({
