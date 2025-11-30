@@ -9,7 +9,8 @@ interface UnitInput {
 
 export async function listUnits() {
   return prisma.unit.findMany({
-    orderBy: { createdAt: 'desc' },
+    where: { isActive: true },
+    orderBy: { name: 'asc' },
   });
 }
 
@@ -71,5 +72,8 @@ export async function deleteUnit(id: number) {
     throw new HttpError(404, 'Unidade não encontrada');
   }
 
-  await prisma.unit.delete({ where: { id } });
+  return prisma.unit.update({
+    where: { id },
+    data: { isActive: false },
+  });
 }
