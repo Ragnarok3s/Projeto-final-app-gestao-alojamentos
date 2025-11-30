@@ -12,9 +12,11 @@
   <div class="status error" *ngIf="error$ | async as error">{{ error }}</div>
 
   <div class="calendar-header">
-    <button class="btn btn-secondary" type="button" (click)="changeMonth(-1)">&#8592; Mês anterior</button>
-    <span class="current-month">{{ config.startDate?.toString('MMMM yyyy') }}</span>
-    <button class="btn btn-secondary" type="button" (click)="changeMonth(1)">Próximo mês &#8594;</button>
+    <button class="btn btn-secondary" type="button" (click)="goToPreviousMonth()">
+      &#8592; Mês anterior
+    </button>
+    <span class="current-month"><strong>{{ currentMonthLabel }}</strong></span>
+    <button class="btn btn-secondary" type="button" (click)="goToNextMonth()">Próximo mês &#8594;</button>
   </div>
 
   <app-calendar
