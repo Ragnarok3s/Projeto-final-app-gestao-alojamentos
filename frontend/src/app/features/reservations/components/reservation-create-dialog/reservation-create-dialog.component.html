@@ -68,6 +68,8 @@
 
         <div class="error" *ngIf="form.errors?.['dateRangeInvalid']">Data de início tem de ser anterior à data de fim.</div>
 
+        <div class="error global" *ngIf="error$ | async as error">{{ error }}</div>
+
         <div class="dialog-actions">
           <button class="btn btn-secondary" type="button" (click)="cancel()">Cancelar</button>
           <button class="btn btn-primary" type="submit">Guardar reserva</button>
