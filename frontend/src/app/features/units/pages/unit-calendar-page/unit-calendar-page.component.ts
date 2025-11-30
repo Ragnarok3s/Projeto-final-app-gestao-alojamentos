@@ -23,7 +23,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   from!: string;
   to!: string;
   currentDate: Date = new Date();
-  currentView: string = 'Week';
+  currentView: DayPilot.CalendarViewType = 'Week';
 
   reservations$: Observable<Reservation[]> = of([]);
   events: DayPilot.EventData[] = [];
@@ -34,7 +34,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   private reservationsSub?: Subscription;
   private currentReservations: Reservation[] = [];
 
-  config: any = {
+  config: DayPilot.CalendarConfig = {
     viewType: 'Week',
     startDate: DayPilot.Date.today().firstDayOfMonth(),
     headerDateFormat: 'MMMM yyyy',
@@ -106,7 +106,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     this.updateCalendarRange(updatedDate, this.currentView);
   }
 
-  setView(view: string): void {
+  setView(view: DayPilot.CalendarViewType): void {
     if (this.currentView === view) {
       return;
     }
@@ -115,7 +115,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     this.updateCalendarRange(this.currentDate, this.currentView);
   }
 
-  onEventClick(event: any): void {
+  onEventClick(event: DayPilot.EventClickArgs): void {
     const reservationId = Number(event.e.id());
     const reservation = this.currentReservations.find((r) => r.id === reservationId);
     if (reservation) {
@@ -123,7 +123,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  onTimeRangeSelected(args: any): void {
+  onTimeRangeSelected(args: DayPilot.TimeRangeSelectedArgs): void {
     const startDate = args.start.toDate();
     this.currentView = 'Week';
     this.updateCalendarRange(startDate, 'Week');
@@ -157,7 +157,7 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     this.updateVisibleRange(newStart);
   }
 
-  private updateCalendarRange(date: Date, view: string): void {
+  private updateCalendarRange(date: Date, view: DayPilot.CalendarViewType): void {
     const start = view === 'Month' ? new DayPilot.Date(this.getMonthStart(date)) : new DayPilot.Date(this.getWeekStart(date));
 
     this.currentDate = date;
@@ -201,9 +201,5 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     const diff = (day + 6) % 7; // start week on Monday
     weekStart.setDate(weekStart.getDate() - diff);
     return weekStart;
-  }
-
-  private toIsoDate(date: Date): string {
-    return date.toISOString().split('T')[0];
   }
 }

@@ -11,29 +11,47 @@ export class CalendarComponent {
   @Input() events: DayPilot.EventData[] = [];
 
   @Input()
-  set config(value: any) {
-    this._config = { ...this.defaultConfig, ...value };
+  set config(value: Partial<DayPilot.CalendarConfig> | undefined) {
+    this._config = this.mergeConfigWithDefaults(value);
   }
-  get config(): any {
+  get config(): DayPilot.CalendarConfig {
     return this._config;
   }
 
-  @Output() eventClick = new EventEmitter<any>();
-  @Output() timeRangeSelected = new EventEmitter<any>();
+  @Output() eventClick = new EventEmitter<DayPilot.EventClickArgs>();
+  @Output() timeRangeSelected = new EventEmitter<DayPilot.TimeRangeSelectedArgs>();
 
-  private readonly defaultConfig: any = {
+  private readonly defaultConfig: DayPilot.CalendarConfig = {
     viewType: 'Week',
-    onEventClick: (args: any) => this.onEventClick(args),
-    onTimeRangeSelected: (args: any) => this.onTimeRangeSelected(args)
+    onEventClick: (args: DayPilot.EventClickArgs) => this.emitEventClick(args),
+    onTimeRangeSelected: (args: DayPilot.TimeRangeSelectedArgs) => this.emitTimeRangeSelected(args)
   };
 
-  private _config: any = this.defaultConfig;
+  private _config: DayPilot.CalendarConfig = this.defaultConfig;
 
-  onEventClick(args: any): void {
+  private mergeConfigWithDefaults(config: Partial<DayPilot.CalendarConfig> | undefined): DayPilot.CalendarConfig {
+    const safeConfig = config ?? {};
+    const { onEventClick, onTimeRangeSelected, ...restConfig } = safeConfig;
+
+    return {
+      ...this.defaultConfig,
+      ...restConfig,
+      onEventClick: (args: DayPilot.EventClickArgs) => {
+        this.emitEventClick(args);
+        onEventClick?.(args);
+      },
+      onTimeRangeSelected: (args: DayPilot.TimeRangeSelectedArgs) => {
+        this.emitTimeRangeSelected(args);
+        onTimeRangeSelected?.(args);
+      }
+    };
+  }
+
+  private emitEventClick(args: DayPilot.EventClickArgs): void {
     this.eventClick.emit(args);
   }
 
-  onTimeRangeSelected(args: any): void {
+  private emitTimeRangeSelected(args: DayPilot.TimeRangeSelectedArgs): void {
     this.timeRangeSelected.emit(args);
   }
 }
