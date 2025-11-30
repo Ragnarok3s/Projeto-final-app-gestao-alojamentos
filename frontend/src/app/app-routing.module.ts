@@ -18,6 +18,10 @@ const routes: Routes = [
       {
         path: 'units',
         loadChildren: () => import('./features/units/units.module').then((m) => m.UnitsModule)
+      },
+      {
+        path: 'calendar-geral',
+        loadChildren: () => import('./features/calendar/calendar.module').then((m) => m.CalendarModule)
       }
     ]
   },
