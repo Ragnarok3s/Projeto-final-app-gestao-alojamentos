@@ -7,6 +7,7 @@ import { Unit } from '../../../units/models/unit.model';
 import { selectAllUnits } from '../../../units/state/units.selectors';
 import { CreateReservationPayload } from '../../models/reservation.model';
 import { createReservation } from '../../state/reservations.actions';
+import { selectReservationsError } from '../../state/reservations.selectors';
 
 @Component({
   selector: 'app-reservation-create-dialog',
@@ -21,6 +22,7 @@ export class ReservationCreateDialogComponent {
   step: 1 | 2 = 1;
 
   units$: Observable<Unit[]> = this.store.select(selectAllUnits).pipe(map((units) => units.filter((u) => u.isActive)));
+  error$: Observable<string | null> = this.store.select(selectReservationsError);
 
   constructor(private readonly fb: FormBuilder, private readonly store: Store) {
     this.form = this.fb.group(
