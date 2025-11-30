@@ -13,6 +13,13 @@ export class ReservationsService {
 
   constructor(private readonly http: HttpClient) {}
 
+  getOverviewReservations(from: string, to: string): Observable<Reservation[]> {
+    const params = { from, to };
+    return this.http
+      .get<Reservation[]>(`${this.baseUrl}/calendar/overview`, { params })
+      .pipe(map((reservations) => reservations.map((reservation) => this.normalizeReservation(reservation))));
+  }
+
   getReservations(unitId: number, from?: string, to?: string): Observable<Reservation[]> {
     let params = new HttpParams();
     if (from) {

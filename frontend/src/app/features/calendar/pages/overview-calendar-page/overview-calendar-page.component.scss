@@ -1,0 +1,28 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  h1 {
+    margin: 0;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    button {
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+    }
+  }
+}
+
+.calendar-wrapper {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 0.5rem;
+  background: #fff;
+}

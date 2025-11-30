@@ -5,6 +5,7 @@ import {
   updateReservation,
   cancelReservation,
 } from '../services/reservations.service';
+import { prisma } from '../config/prisma';
 
 interface ReservationRecord {
   id: number;
@@ -15,6 +16,9 @@ interface ReservationRecord {
   guestContact: string | null;
   notes: string | null;
   status: string;
+  guestsCount?: number | null;
+  channel?: string | null;
+  totalPrice?: number | null;
   createdAt: Date;
 }
 
@@ -112,5 +116,33 @@ export async function cancelReservationHandler(req: Request, res: Response, next
     return res.json(toApiReservation(reservation));
   } catch (error) {
     return next(error);
+  }
+}
+
+export async function getOverviewReservations(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { from, to } = req.query;
+
+    const fromDate = from ? new Date(from as string) : undefined;
+    const toDate = to ? new Date(to as string) : undefined;
+
+    const reservations = await prisma.reservation.findMany({
+      where: {
+        status: 'CONFIRMED',
+        ...(fromDate && toDate
+          ? {
+              startDate: { lt: toDate },
+              endDate: { gt: fromDate },
+            }
+          : {}),
+      },
+      include: {
+        unit: true,
+      },
+    });
+
+    res.json(reservations);
+  } catch (err) {
+    next(err);
   }
 }
