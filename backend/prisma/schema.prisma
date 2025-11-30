@@ -26,14 +26,17 @@ model Unit {
 }
 
 model Reservation {
-  id          Int      @id @default(autoincrement())
-  unitId      Int
-  unit        Unit     @relation(fields: [unitId], references: [id])
-  startDate   DateTime
-  endDate     DateTime
-  guestName   String
+  id           Int      @id @default(autoincrement())
+  unitId       Int
+  unit         Unit     @relation(fields: [unitId], references: [id])
+  startDate    DateTime
+  endDate      DateTime
+  guestName    String
   guestContact String?
-  notes       String?
-  status      String
-  createdAt   DateTime @default(now())
+  notes        String?
+  status       String   @default("CONFIRMED")
+  guestsCount  Int?
+  channel      String?
+  totalPrice   Int?
+  createdAt    DateTime @default(now())
 }
