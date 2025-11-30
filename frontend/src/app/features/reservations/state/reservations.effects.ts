@@ -86,6 +86,10 @@ export class ReservationsEffects {
   ) {}
 
   private resolveSaveError(error: HttpErrorResponse): string {
+    const serverMessage = (error.error as { message?: string } | undefined)?.message;
+    if (serverMessage) {
+      return serverMessage;
+    }
     if (error.status === 409) {
       return 'Já existe reserva nessas datas para esta unidade.';
     }

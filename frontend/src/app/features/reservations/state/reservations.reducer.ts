@@ -6,6 +6,7 @@ import {
   cancelReservation,
   cancelReservationFailure,
   cancelReservationSuccess,
+  clearReservationsError,
   createReservation,
   createReservationFailure,
   createReservationSuccess,
@@ -50,7 +51,8 @@ export const reservationsReducer = createReducer(
   on(createReservationSuccess, (state, { reservation }) =>
     reservationsAdapter.upsertOne(reservation, { ...state, loading: false, error: null })
   ),
-  on(createReservationFailure, (state, { error }) => ({ ...state, loading: false, error }))
+  on(createReservationFailure, (state, { error }) => ({ ...state, loading: false, error })),
+  on(clearReservationsError, (state) => ({ ...state, error: null }))
 );
 
 export const { selectAll: selectAllReservations, selectEntities: selectReservationEntities } = reservationsAdapter.getSelectors();

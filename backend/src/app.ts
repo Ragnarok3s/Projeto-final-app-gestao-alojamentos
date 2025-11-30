@@ -3,6 +3,7 @@ import cors from 'cors';
 import { authRouter } from './routes/auth.routes';
 import { unitsRouter } from './routes/units.routes';
 import { reservationsRouter } from './routes/reservations.routes';
+import { calendarRouter } from './routes/calendar.routes';
 import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
@@ -21,6 +22,7 @@ const apiRouter = express.Router();
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/units', unitsRouter);
+apiRouter.use('/calendar', calendarRouter);
 apiRouter.use(reservationsRouter);
 
 app.use('/api', apiRouter);

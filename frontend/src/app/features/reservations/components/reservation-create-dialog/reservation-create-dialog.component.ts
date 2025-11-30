@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { map, Observable } from 'rxjs';
@@ -6,7 +6,8 @@ import { map, Observable } from 'rxjs';
 import { Unit } from '../../../units/models/unit.model';
 import { selectAllUnits } from '../../../units/state/units.selectors';
 import { CreateReservationPayload } from '../../models/reservation.model';
-import { createReservation } from '../../state/reservations.actions';
+import { clearReservationsError, createReservation } from '../../state/reservations.actions';
+import { selectReservationsError } from '../../state/reservations.selectors';
 
 @Component({
   selector: 'app-reservation-create-dialog',
@@ -14,13 +15,14 @@ import { createReservation } from '../../state/reservations.actions';
   styleUrls: ['./reservation-create-dialog.component.scss'],
   standalone: false
 })
-export class ReservationCreateDialogComponent {
+export class ReservationCreateDialogComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
 
   form: FormGroup;
   step: 1 | 2 = 1;
 
   units$: Observable<Unit[]> = this.store.select(selectAllUnits).pipe(map((units) => units.filter((u) => u.isActive)));
+  error$: Observable<string | null> = this.store.select(selectReservationsError);
 
   constructor(private readonly fb: FormBuilder, private readonly store: Store) {
     this.form = this.fb.group(
@@ -35,6 +37,10 @@ export class ReservationCreateDialogComponent {
       },
       { validators: this.validateDateRange }
     );
+  }
+
+  ngOnInit(): void {
+    this.store.dispatch(clearReservationsError());
   }
 
   nextStep(): void {
@@ -67,6 +73,7 @@ export class ReservationCreateDialogComponent {
   }
 
   cancel(): void {
+    this.store.dispatch(clearReservationsError());
     this.close.emit();
   }
 

@@ -48,6 +48,8 @@ export const createReservationFailure = createAction(
   props<{ error: string }>()
 );
 
+export const clearReservationsError = createAction('[Reservations] Clear Reservations Error');
+
 export const cancelReservation = createAction(
   '[Reservations] Cancel Reservation',
   props<{ id: number }>()

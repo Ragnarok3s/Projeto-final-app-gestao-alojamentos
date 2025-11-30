@@ -15,4 +15,8 @@
 .error {
   color: #d32f2f;
   font-size: 12px;
+
+  &.global {
+    margin-top: 4px;
+  }
 }
