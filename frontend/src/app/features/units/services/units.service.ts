@@ -36,8 +36,8 @@ export class UnitsService {
     });
   }
 
-  deleteUnit(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`, {
+  deleteUnit(id: number): Observable<Unit> {
+    return this.http.delete<Unit>(`${this.baseUrl}/${id}`, {
       headers: this.getAuthHeaders()
     });
   }

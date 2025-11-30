@@ -45,8 +45,8 @@ export async function deleteUnit(req: Request, res: Response, next: NextFunction
       throw new HttpError(400, 'ID inválido');
     }
 
-    await deleteUnitService(unitId);
-    return res.status(204).send();
+    const unit = await deleteUnitService(unitId);
+    return res.status(200).json(unit);
   } catch (error) {
     return next(error);
   }
