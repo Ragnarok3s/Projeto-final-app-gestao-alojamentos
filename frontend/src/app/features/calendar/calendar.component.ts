@@ -1,6 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DayPilot } from '@daypilot/daypilot-lite-angular';
 
+type CalendarConfig = DayPilot.CalendarConfig & {
+  viewType?: DayPilot.CalendarPropsAndEvents['viewType'] | 'Month';
+};
+
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
@@ -11,29 +15,29 @@ export class CalendarComponent {
   @Input() events: DayPilot.EventData[] = [];
 
   @Input()
-  set config(value: any) {
+  set config(value: Partial<CalendarConfig>) {
     this._config = { ...this.defaultConfig, ...value };
   }
-  get config(): any {
+  get config(): CalendarConfig {
     return this._config;
   }
 
-  @Output() eventClick = new EventEmitter<any>();
-  @Output() timeRangeSelected = new EventEmitter<any>();
+  @Output() eventClick = new EventEmitter<DayPilot.CalendarEventClickArgs>();
+  @Output() timeRangeSelected = new EventEmitter<DayPilot.CalendarTimeRangeSelectedArgs>();
 
-  private readonly defaultConfig: any = {
+  private readonly defaultConfig: CalendarConfig = {
     viewType: 'Week',
-    onEventClick: (args: any) => this.onEventClick(args),
-    onTimeRangeSelected: (args: any) => this.onTimeRangeSelected(args)
+    onEventClick: (args: DayPilot.CalendarEventClickArgs) => this.onEventClick(args),
+    onTimeRangeSelected: (args: DayPilot.CalendarTimeRangeSelectedArgs) => this.onTimeRangeSelected(args)
   };
 
-  private _config: any = this.defaultConfig;
+  private _config: CalendarConfig = this.defaultConfig;
 
-  onEventClick(args: any): void {
+  onEventClick(args: DayPilot.CalendarEventClickArgs): void {
     this.eventClick.emit(args);
   }
 
-  onTimeRangeSelected(args: any): void {
+  onTimeRangeSelected(args: DayPilot.CalendarTimeRangeSelectedArgs): void {
     this.timeRangeSelected.emit(args);
   }
 }
