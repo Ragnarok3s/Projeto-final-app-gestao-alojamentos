@@ -5,11 +5,13 @@ import {
   postReservation,
   putReservation,
   cancelReservationHandler,
+  getOverviewReservations,
 } from '../controllers/reservations.controller';
 
 const router = Router();
 
 router.use(authMiddleware);
+router.get('/calendar/overview', getOverviewReservations);
 router.get('/units/:unitId/reservations', getReservations);
 router.post('/units/:unitId/reservations', postReservation);
 router.put('/reservations/:id', putReservation);
