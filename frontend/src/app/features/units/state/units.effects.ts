@@ -13,7 +13,10 @@ import {
   loadUnitsSuccess,
   updateUnit,
   updateUnitFailure,
-  updateUnitSuccess
+  updateUnitSuccess,
+  deleteUnit,
+  deleteUnitFailure,
+  deleteUnitSuccess
 } from './units.actions';
 
 @Injectable()
@@ -49,6 +52,18 @@ export class UnitsEffects {
         this.unitsService.updateUnit(id, changes).pipe(
           map((unit) => updateUnitSuccess({ unit })),
           catchError((error: HttpErrorResponse) => of(updateUnitFailure({ error: this.resolveSaveError(error) })))
+        )
+      )
+    )
+  );
+
+  deleteUnit$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(deleteUnit),
+      mergeMap(({ id }) =>
+        this.unitsService.deleteUnit(id).pipe(
+          map(() => deleteUnitSuccess({ id })),
+          catchError(() => of(deleteUnitFailure({ error: 'Não foi possível eliminar a unidade.' })))
         )
       )
     )

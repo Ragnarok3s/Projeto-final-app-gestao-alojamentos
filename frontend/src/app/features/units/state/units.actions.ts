@@ -13,3 +13,7 @@ export const createUnitFailure = createAction('[Units] Create Unit Failure', pro
 export const updateUnit = createAction('[Units] Update Unit', props<{ id: number; changes: Partial<UnitPayload> }>());
 export const updateUnitSuccess = createAction('[Units] Update Unit Success', props<{ unit: Unit }>());
 export const updateUnitFailure = createAction('[Units] Update Unit Failure', props<{ error: string }>());
+
+export const deleteUnit = createAction('[Units] Delete Unit', props<{ id: number }>());
+export const deleteUnitSuccess = createAction('[Units] Delete Unit Success', props<{ id: number }>());
+export const deleteUnitFailure = createAction('[Units] Delete Unit Failure', props<{ error: string }>());

@@ -64,3 +64,12 @@ export async function updateUnit(id: number, data: UnitInput) {
     },
   });
 }
+
+export async function deleteUnit(id: number) {
+  const existing = await prisma.unit.findUnique({ where: { id } });
+  if (!existing) {
+    throw new HttpError(404, 'Unidade não encontrada');
+  }
+
+  await prisma.unit.delete({ where: { id } });
+}
