@@ -12,8 +12,6 @@ import {
   selectReservationsLoading
 } from '../../../reservations/state/reservations.selectors';
 
-type CalendarView = 'Day' | 'Days' | 'Week' | 'WorkWeek' | 'Resources';
-
 @Component({
   selector: 'app-unit-calendar-page',
   standalone: false,
@@ -24,8 +22,8 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   unitId!: number;
   from!: string;
   to!: string;
-  currentDate: Date = new Date();
-  currentView: CalendarView = 'Week';
+  currentMonth: DayPilot.Date = DayPilot.Date.today();
+  currentMonthLabel: string = '';
 
   reservations$: Observable<Reservation[]> = of([]);
   events: DayPilot.EventData[] = [];
@@ -37,9 +35,10 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   private currentReservations: Reservation[] = [];
 
   config: DayPilot.CalendarConfig = {
-    viewType: 'Week',
+    viewType: 'Days',
     startDate: DayPilot.Date.today().firstDayOfMonth(),
-    headerDateFormat: 'MMMM yyyy',
+    days: DayPilot.Date.today().daysInMonth(),
+    headerDateFormat: 'd',
     theme: 'daypilot-light'
   };
 
@@ -53,8 +52,8 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
       }
 
       this.unitId = id;
-      const start = new DayPilot.Date(this.config.startDate);
-      const { from, to } = this.updateVisibleRange(start);
+      this.currentMonth = DayPilot.Date.today();
+      this.updateCalendarRange();
       this.reservations$ = this.store.select(selectReservationsByUnit(this.unitId));
 
       this.reservationsSub?.unsubscribe();
@@ -80,31 +79,8 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   }
 
   goToToday(): void {
-    this.currentDate = new Date();
-    this.updateCalendarRange(this.currentDate, this.currentView);
-  }
-
-  goToPrevious(): void {
-    const updatedDate = new Date(this.currentDate);
-    updatedDate.setDate(updatedDate.getDate() - this.getNavigationOffset());
-
-    this.updateCalendarRange(updatedDate, this.currentView);
-  }
-
-  goToNext(): void {
-    const updatedDate = new Date(this.currentDate);
-    updatedDate.setDate(updatedDate.getDate() + this.getNavigationOffset());
-
-    this.updateCalendarRange(updatedDate, this.currentView);
-  }
-
-  setView(view: CalendarView): void {
-    if (this.currentView === view) {
-      return;
-    }
-
-    this.currentView = view;
-    this.updateCalendarRange(this.currentDate, this.currentView);
+    this.currentMonth = DayPilot.Date.today();
+    this.updateCalendarRange();
   }
 
   onEventClick(event: any): void {
@@ -116,9 +92,6 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
   }
 
   onTimeRangeSelected(args: any): void {
-    const startDate = args.start.toDate();
-    this.currentView = 'Week';
-    this.updateCalendarRange(startDate, 'Week');
     args.control?.clearSelection();
   }
 
@@ -142,39 +115,30 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
     this.store.dispatch(cancelReservation({ id: this.selectedReservation.id }));
   }
 
-  changeMonth(offset: number): void {
-    const startDate = new DayPilot.Date(this.config.startDate || DayPilot.Date.today());
-    const newStart = startDate.addMonths(offset);
-    this.config = { ...this.config, startDate: newStart };
-    this.updateVisibleRange(newStart);
+  goToPreviousMonth(): void {
+    this.currentMonth = this.currentMonth.addMonths(-1);
+    this.updateCalendarRange();
   }
 
-  private updateCalendarRange(date: Date, view: CalendarView): void {
-    const start =
-      view === 'Week' || view === 'WorkWeek' || view === 'Resources'
-        ? new DayPilot.Date(this.getWeekStart(date))
-        : new DayPilot.Date(date);
+  goToNextMonth(): void {
+    this.currentMonth = this.currentMonth.addMonths(1);
+    this.updateCalendarRange();
+  }
 
-    this.currentDate = date;
-    this.currentView = view;
-    this.config = { ...this.config, viewType: view, startDate: start };
-    this.updateVisibleRange(start);
+  private updateCalendarRange(): void {
+    this.config = {
+      ...this.config,
+      startDate: this.currentMonth.firstDayOfMonth(),
+      days: this.currentMonth.daysInMonth()
+    };
+
+    this.currentMonthLabel = this.currentMonth.toString('MMMM yyyy');
+    this.updateVisibleRange(this.currentMonth.firstDayOfMonth());
   }
 
   private updateVisibleRange(start: DayPilot.Date): { from: string; to: string } {
-    const viewType: CalendarView = (this.config.viewType as CalendarView) || 'Week';
-    const firstDay =
-      viewType === 'Week' || viewType === 'WorkWeek' || viewType === 'Resources'
-        ? new DayPilot.Date(this.getWeekStart(start.toDate()))
-        : start;
-    const daysInView =
-      viewType === 'Day'
-        ? 0
-        : viewType === 'WorkWeek'
-          ? 4
-          : viewType === 'Days'
-            ? Math.max((this.config.days || 1) - 1, 0)
-            : 6;
+    const firstDay = start;
+    const daysInView = Math.max((this.config.days || 1) - 1, 0);
     const lastDay = firstDay.addDays(daysInView);
 
     this.from = firstDay.toString('yyyy-MM-dd');
@@ -194,25 +158,5 @@ export class UnitCalendarPageComponent implements OnInit, OnDestroy {
       start: reservation.startDate,
       end: reservation.endDate
     }));
-  }
-
-  private getWeekStart(date: Date): Date {
-    const weekStart = new Date(date);
-    const day = weekStart.getDay();
-    const diff = (day + 6) % 7; // start week on Monday
-    weekStart.setDate(weekStart.getDate() - diff);
-    return weekStart;
-  }
-
-  private getNavigationOffset(): number {
-    if (this.currentView === 'Day') {
-      return 1;
-    }
-
-    if (this.currentView === 'Days') {
-      return Math.max(this.config.days || 1, 1);
-    }
-
-    return 7;
   }
 }
