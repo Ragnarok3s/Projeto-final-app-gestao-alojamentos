@@ -17,7 +17,7 @@
     "@angular/platform-browser": "^21.0.0",
     "@angular/platform-browser-dynamic": "^21.0.0",
     "@angular/router": "^21.0.0",
-    "@daypilot/daypilot-lite-angular": "^2024.0.0",
+    "@daypilot/daypilot-lite-angular": "^4.8.1",
     "@ngrx/effects": "^20.1.0",
     "@ngrx/entity": "^20.1.0",
     "@ngrx/store": "^20.1.0",
